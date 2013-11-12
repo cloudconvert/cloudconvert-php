@@ -11,21 +11,25 @@ class CloudConvert {
      * This should be adjusted based on your PHP configuraion (max_execution_time etc)
      * Only necesarry for server side conversions
      */
-    const TIMEOUT = 120;
 
     private $apikey;
     private $url;
+    private $data;
+    private $options = array();
 
     /*
-     * Constructor creates the Process ID.
+     * creates new Process ID.
      * see: https://cloudconvert.org/page/api#start
      *
      */
 
-    public function __construct($inputformat, $outputformat, $apikey = null) {
-        $this -> apikey = $apikey;
+    public static function createProcess($inputformat, $outputformat, $apikey = null) {
 
-        $data = $this -> req('https://api.cloudconvert.org/process', array(
+        $instance = new self();
+
+        $instance -> apikey = $apikey;
+
+        $data = $instance -> req('https://api.cloudconvert.org/process', array(
             'inputformat' => $inputformat,
             'outputformat' => $outputformat,
             'apikey' => $apikey
@@ -34,54 +38,123 @@ class CloudConvert {
         if (strpos($data -> url, 'http') === false)
             $data -> url = "https:" . $data -> url;
 
-        $this -> url = $data -> url;
+        $instance -> url = $data -> url;
+
+        return $instance;
 
     }
 
     /*
-     * Does the actual conversion (server side)
+     * uses existing Process by given Process URL
+     */
+    public static function useProcess($url) {
+        $instance = new self();
+        if (strpos($url, 'http') === false)
+            $url = "https:" . $url;
+        $instance -> url = $url;
+        return $instance;
+    }
+
+    /*
+     * Set conversion option.
+     * examples:
+     * $converter -> setOption('email' => '1');
+     * $converter -> setOption('options[audio_bitrate]' => '128');
+     *
      */
 
-    public function convert($filepath, $outputformat, $target) {
-        $file = pathinfo($filepath);
-        $this -> req($this -> url, array(
+    public function setOption($name, $val) {
+        $this -> options[$name] = $val;
+    }
+
+    /*
+     * Uploads the input file (server side)
+     */
+    public function upload($filepath, $outputformat) {
+        $this -> req($this -> url, array_merge(array(
             'input' => 'upload',
-            /*
-             * Specify advanced options like this:
-             *
-             * 'options[audio_bitrate]' => '128',
-             *
-             * see: https://cloudconvert.org/page/api#types
-             *
-             */
             'format' => $outputformat,
             'file' => '@' . $filepath
-        ));
+        )), $this -> options);
+    }
+
+    /*
+     * Let CloudConvert download the input file by a given URL and filename
+     */
+    public function uploadByURL($url, $filename, $outputformat) {
+        $this -> req($this -> url, array_merge(array(
+            'input' => 'download',
+            'format' => $outputformat,
+            'filename' => $filename,
+            'link' => $url,
+        )), $this -> options);
+    }
+
+    /*
+     * returns Process URL
+     */
+    public function getURL() {
+        return $this -> url;
+    }
+
+    /*
+     * Checks the current status of the process
+     */
+    public function status($action = null) {
+        if (empty($this -> url))
+            throw new Exception("No process URL found! (Conversion not started)");
+        $this -> data = $this -> req($this -> url . ($action ? '/' . $action : ''));
+        return $this -> data;
+    }
+
+    public function cancel() {
+        return $this -> status('cancel');
+    }
+
+    public function delete() {
+        return $this -> status('delete');
+    }
+
+    /*
+     * Blocks until the conversion is finished
+     */
+    public function waitForConversion($timeout = 120) {
         $time = 0;
         /*
          * Check the status every second, up to timeout
          */
-        while ($time <= self::TIMEOUT) {
+        while ($time <= $timeout) {
             sleep(1);
             $time++;
-            $data = $this -> req($this -> url);
+            $data = $this -> status();
             if ($data -> step == 'error') {
                 throw new Exception($data -> message);
                 return false;
             } elseif ($data -> step == 'finished' && isset($data -> output) && isset($data -> output -> url)) {
-                if (strpos($data -> output -> url, 'http') === false)
-                    $data -> output -> url = "https:" . $data -> output -> url;
-                $this -> download($data -> output -> url, $target);
                 return true;
             }
         }
         throw new Exception('Timeout');
         return false;
-
     }
 
-    public function getURL() {
-        return $this -> url;
+    /*
+     * Download output file to local target
+     */
+    public function download($target) {
+        if (empty($this -> data -> output -> url))
+            throw new Exception("No download URL found! (Conversion not finished or failed)");
+        if (strpos($this -> data -> output -> url, 'http') === false)
+            $this -> data -> output -> url = "https:" . $this -> data -> output -> url;
+        $fp = fopen($target, 'w+');
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this -> data -> output -> url);
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        if (!curl_exec($ch)) {
+            throw new Exception(curl_error($ch));
+        }
+        curl_close($ch);
+        fclose($fp);
     }
 
     private function req($url, $post = null) {
@@ -91,10 +164,9 @@ class CloudConvert {
         curl_setopt($ch, CURLOPT_FAILONERROR, false);
 
         /*
-         * Remove this option for productive use!
-         * Therefore it may be necessary to store the certificate locally.
+         * If you have SSL cert errors, try to disable SSL verifyer.
          */
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         if (!empty($post)) {
             curl_setopt($ch, CURLOPT_POST, TRUE);
@@ -113,19 +185,6 @@ class CloudConvert {
         }
         curl_close($ch);
 
-    }
-
-    private function download($url, $target) {
-        $fp = fopen($target, 'w+');
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_FILE, $fp);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        if (!curl_exec($ch)) {
-            throw new Exception(curl_error($ch));
-        }
-        curl_close($ch);
-        fclose($fp);
     }
 
 }

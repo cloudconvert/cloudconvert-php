@@ -4,14 +4,19 @@
  * Uploads the file from client side and track the status
  */
 
+
+// for testing it could be helpful...
+ini_set('display_errors', 1);
+ 
+ 
 require_once 'CloudConvert.class.php';
 
 // insert your API key here
 $apikey = "";
 
 // Get the Process URL
-$converter = new CloudConvert("png", "pdf", $apikey);
-$url = $converter -> getURL();
+$process = CloudConvert::createProcess("png", "pdf", $apikey);
+$url = $process -> getURL();
 if(!empty($url)) {
 ?>
 <html>
@@ -44,41 +49,41 @@ if(!empty($url)) {
 
 
 		<script>
-			$(document).ready(function() {
+						$(document).ready(function() {
 
 				var getstatus = function() {
 
 					$.ajax({
-						url : "<?=$url ?>",
-					}).done(function(data) {
+						url : "<?=$url ?>
+						",
+						}).done(function(data) {
 						// update info
 						$('#status').text('Step ' + data.step + ': ' + data.message);
-                    
+
 						// check status every second
 						if (data.step != 'error' && data.step != 'finished') {
-							window.setTimeout(getstatus, 1000);
+						window.setTimeout(getstatus, 1000);
 						}
-						
+
 						// finsihed ? -> echo download URL
 						if(data.step == 'finished') {
-						    $('#status').parent().append('<a href="' + data.output.url + '">Download file</a>');
+						$('#status').parent().append('<a href="' + data.output.url + '">Download file</a>');
 						}
-						
-						
-					});
 
-				}
+						});
 
-				$('#form').submit(function() {
-					$('#status').text('Uploading...');
-				});
+						}
 
-				$('#hiddenframe').load(function() {
-				    // iframe loaded: file is uploaded, check the status
-					getstatus();
-				});
+						$('#form').submit(function() {
+						$('#status').text('Uploading...');
+						});
 
-			});
+						$('#hiddenframe').load(function() {
+						// iframe loaded: file is uploaded, check the status
+						getstatus();
+						});
+
+						});
 		</script>
 
 	</body>
