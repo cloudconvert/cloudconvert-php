@@ -74,7 +74,7 @@ class CloudConvert {
         $this -> req($this -> url, array_merge(array(
             'input' => 'upload',
             'format' => $outputformat,
-            'file' => '@' . $filepath
+            'file' => (class_exists(CURLFile) ? new CURLFile($filepath) : '@' . $filepath) // CURLFile is available PHP >= 5.5.0
         )), $this -> options);
     }
 
