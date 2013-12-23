@@ -14,6 +14,9 @@ $apikey="";
 
 $process = CloudConvert::createProcess("png", "pdf", $apikey);
 
+// set some options here...
+// $process -> setOption("email", "1");
+
 $process-> upload("input.png", "pdf" );
 
 if ($process-> waitForConversion()) {

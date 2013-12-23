@@ -6,12 +6,6 @@
  */
 class CloudConvert {
 
-    /*
-     * Maximum conversion timeout.
-     * This should be adjusted based on your PHP configuraion (max_execution_time etc)
-     * Only necesarry for server side conversions
-     */
-
     private $apikey;
     private $url;
     private $data;

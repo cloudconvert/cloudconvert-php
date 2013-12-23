@@ -16,7 +16,7 @@ The input file (input.png) is uploaded with CURL to CloudConvert and afterwards 
 Client Side Example (sample.clientside.php)
 -------------------
 
-The use can select the input file (PNG) from his computer and uploaad it directly to CloudConvert. Afterwards the status of the conversion is checked via AJAX.
+The user can select the input file (PNG) from his computer and upload it directly to CloudConvert. Afterwards the status of the conversion is checked via AJAX.
 
 
 Server Side Example with Callback (sample.serverside.callback.php)

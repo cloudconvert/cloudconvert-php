@@ -39,6 +39,9 @@ if (!empty($_REQUEST['callback'])) {
 
     $process = CloudConvert::createProcess("png", "pdf", $apikey);
 
+    // set some options here...
+    // $process -> setOption("email", "1");
+
     // insert (public) URLs here
     $process -> setOption("callback", "http://_INSERT_PUBLIC_URL_TO_THIS_FILE_/sample.serverside.callback.php?callback=true");
     $process -> uploadByUrl("http://_INSERT_PUBLIC_URL_TO_INPUT_FILE_/input.png", "input.png", "pdf");
