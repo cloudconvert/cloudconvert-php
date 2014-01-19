@@ -24,7 +24,7 @@ if ($process-> waitForConversion()) {
 }
 ```
 
-The full example can be found here: [sample.serverside.php](LunawebLtd/cloudconvert-sample-php/sample.serverside.php)
+The full example can be found here: [sample.serverside.php](sample.serverside.php)
 
 
 Server Side Uploading with Callback
@@ -33,22 +33,22 @@ Server Side Uploading with Callback
 This is a non-blocking example for server side conversions: The public URL of the input file and a callback URL is sent to CloudConvert. CloudConvert will trigger this callback URL if the conversion is finished.
 
 ```php
-    $process = CloudConvert::createProcess("png", "pdf", $apikey);
+$process = CloudConvert::createProcess("png", "pdf", $apikey);
 
-    $process -> setOption("callback", "http://trigger.me.after.conversion.is/done.php");
-    $process -> uploadByUrl("http://public.url.to/input.png", "input.png", "pdf");
+$process -> setOption("callback", "http://trigger.me.after.conversion.is/done.php");
+$process -> uploadByUrl("http://public.url.to/input.png", "input.png", "pdf");
 
-    echo "Conversion was started in background :-)";
+echo "Conversion was started in background :-)";
 ```
 
-The full example can be found here: [sample.serverside.callback.php](LunawebLtd/cloudconvert-sample-php/sample.serverside.callback.php)
+The full example can be found here: [sample.serverside.callback.php](sample.serverside.callback.php)
 
 Client Side Uploading
 -------------------
 
 The user can select the input file (PNG) from his computer and upload it directly to CloudConvert. Afterwards the status of the conversion is checked via AJAX.
 
-The example can be found here: [sample.clientside.php](LunawebLtd/cloudconvert-sample-php/sample.clientside.php)
+The example can be found here: [sample.clientside.php](sample.clientside.php)
 
 
 
