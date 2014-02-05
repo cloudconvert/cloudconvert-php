@@ -69,7 +69,7 @@ class CloudConvert {
             'input' => 'upload',
             'format' => $outputformat,
             'file' => (class_exists('CURLFile') ? new CURLFile($filepath) : '@' . $filepath) // CURLFile is available PHP >= 5.5.0
-        )), $this -> options);
+        ), $this -> options));
     }
 
     /*
@@ -81,7 +81,8 @@ class CloudConvert {
             'format' => $outputformat,
             'filename' => $filename,
             'link' => $url,
-        )), $this -> options);
+        ), $this -> options));
+
     }
 
     /*
@@ -166,6 +167,7 @@ class CloudConvert {
             curl_setopt($ch, CURLOPT_POST, TRUE);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         }
+
 
         $return = curl_exec($ch);
 
