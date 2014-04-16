@@ -151,6 +151,27 @@ class CloudConvert {
         curl_close($ch);
         fclose($fp);
     }
+    
+    /*
+     * Return output stream to variable
+     */
+    public function downloadStream() {
+        if (empty($this -> data -> output -> url))
+            throw new Exception("No download URL found! (Conversion not finished or failed)");
+        if (strpos($this -> data -> output -> url, 'http') === false)
+            $this -> data -> output -> url = "https:" . $this -> data -> output -> url;
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this -> data -> output -> url);        
+		$stream = curl_exec($ch);
+        if (!curl_exec($ch)) {
+            throw new Exception(curl_error($ch));
+        }
+    
+        curl_close($ch);        
+		
+		return $stream;
+    }    
 
     private function req($url, $post = null) {
         $ch = curl_init();
