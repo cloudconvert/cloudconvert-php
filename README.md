@@ -1,7 +1,7 @@
-cloudconvert-sample-php
+cloudconvert-php
 =======================
 
-This example uses the API of CloudConvert and converts a PNG file to a PDF. There are more than 150 different conversion types possible (see the resource links below for details). 
+This example uses the API of CloudConvert and converts a PNG file to a PDF. There are more than 190 different conversion types possible (see the resource links below for details). 
 
 Feel free to use or modify this example files! If you have questions contact us or open an issue on GitHub.
 
