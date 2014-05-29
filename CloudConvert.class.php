@@ -52,8 +52,8 @@ class CloudConvert {
     /*
      * Set conversion option.
      * examples:
-     * $converter -> setOption('email' => '1');
-     * $converter -> setOption('options[audio_bitrate]' => '128');
+     * $converter -> setOption('email', '1');
+     * $converter -> setOption('options[audio_bitrate]', '128');
      *
      */
 
