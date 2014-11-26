@@ -23,7 +23,7 @@ class CloudConvert {
 
         $instance -> apikey = $apikey;
 
-        $data = $instance -> req('https://api.cloudconvert.org/process', array(
+        $data = $instance -> req('https://api.cloudconvert.com/process', array(
             'inputformat' => $inputformat,
             'outputformat' => $outputformat,
             'apikey' => $apikey
