@@ -59,7 +59,7 @@ If you don't want to use composer, you can download the .phar release from the "
 
 ```php
 <?php
-require 'cloudconvert-php.phar';
+require 'phar://cloudconvert-php.phar/vendor/autoload.php';
 use \CloudConvert\Api;
 $api = new Api("your_api_key");
 
