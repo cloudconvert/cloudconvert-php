@@ -41,7 +41,7 @@ Add the repository in your **composer.json** file or, if you don't already have 
     "name": "Example Application",
     "description": "This is an example",
     "require": {
-        "cloudconvert/cloudconvert-php": "master"
+        "cloudconvert/cloudconvert-php": "dev-master"
     }
 }
 
@@ -53,7 +53,18 @@ Then, you can install CloudConvert APIs wrapper and dependencies with:
 
 This will install ``cloudconvert/cloudconvert-php`` to ``./vendor``, along with other dependencies including ``autoload.php``.
 
+Install with Phar
+-------------------
+If you don't want to use composer, you can download the .phar release from the "Releases" tab on GitHub.
 
+```php
+<?php
+require 'cloudconvert-php.phar';
+use \CloudConvert\Api;
+$api = new Api("your_api_key");
+
+//...
+```
 
 Using with Callback
 -------------------
