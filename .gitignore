@@ -1,4 +1,12 @@
 .project
+.idea
 .settings
+*.iml
+*.sublime-project
+*.sublime-workspace
 .DS_Store
 output.pdf
+node_modules
+vendor
+composer.lock
+composer.phar

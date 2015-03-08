@@ -1,60 +1,208 @@
 cloudconvert-php
 =======================
 
-This example uses the API of CloudConvert and converts a PNG file to a PDF. There are more than 190 different conversion types possible (see the resource links below for details). 
+This is a lightweight wrapper for the [CloudConvert](https://cloudconvert.com) API.
 
-Feel free to use or modify this example files! If you have questions contact us or open an issue on GitHub.
+Feel free to use, improve or modify this wrapper! If you have questions contact us or open an issue on GitHub.
 
-There are three different methods in this example, which are independent from each other:
 
-Server Side Uploading
+
+
+Quickstart
 -------------------
-The input file (input.png) is uploaded with CURL to CloudConvert and afterwards the output file is downloaded in the same directory (output.pdf)
-
 ```php
-$process = CloudConvert::createProcess("png", "pdf", $apikey);
+<?php
+require __DIR__ . '/vendor/autoload.php';
+use \CloudConvert\Api;
+$api = new Api("your_api_key");
 
-$process-> upload("input.png", "pdf" );
-
-if ($process-> waitForConversion()) {
-   $process -> download("output.pdf");
-    echo "Conversion done :-)";
-} else {
-    echo "Something went wrong :-(";
-}
+$api->convert([
+        'inputformat' => 'png',
+        'outputformat' => 'pdf',
+        'input' => 'upload',
+        'file' => fopen('./tests/input.png', 'r'),
+    ])
+    ->wait()
+    ->download('./tests/output.pdf');
+?>
 ```
 
-The full example can be found here: [sample.serverside.php](sample.serverside.php)
+You can use the [CloudConvert API Console](https://cloudconvert.com/apiconsole) to generate ready-to-use PHP code snippets using this wrapper.
 
 
-Server Side Uploading with Callback
+Install with Composer
+-------------------
+To download this wrapper and integrate it inside your PHP application, you can use [Composer](https://getcomposer.org).
+
+Add the repository in your **composer.json** file or, if you don't already have this file, create it at the root of your project with this content:
+
+```json
+{
+    "name": "Example Application",
+    "description": "This is an example",
+    "require": {
+        "cloudconvert/cloudconvert-php": "master"
+    }
+}
+
+```
+
+Then, you can install CloudConvert APIs wrapper and dependencies with:
+
+    php composer.phar install
+
+This will install ``cloudconvert/cloudconvert-php`` to ``./vendor``, along with other dependencies including ``autoload.php``.
+
+
+
+Using with Callback
 -------------------
 
 This is a non-blocking example for server side conversions: The public URL of the input file and a callback URL is sent to CloudConvert. CloudConvert will trigger this callback URL if the conversion is finished.
 
 ```php
-$process = CloudConvert::createProcess("png", "pdf", $apikey);
+<?php
+require __DIR__ . '/vendor/autoload.php';
+use \CloudConvert\Api;
+$api = new Api("your_api_key");
 
-$process -> setOption("callback", "http://trigger.me.after.conversion.is/done.php");
-$process -> uploadByUrl("http://public.url.to/input.png", "input.png", "pdf");
+$process = $api->createProcess([
+    'inputformat' => 'png',
+    'outputformat' => 'jpg',
+]);
+
+$process->start([
+    'outputformat' => 'jpg',
+    'converteroptions' => [
+        'quality' => 75,
+    ],
+    'input' => 'download',
+    'file' => 'https://cloudconvert.com/blog/wp-content/themes/cloudconvert/img/logo_96x60.png',
+    'callback' => 'http://_INSERT_PUBLIC_URL_TO_/callback.php'
+]);
 
 echo "Conversion was started in background :-)";
+?>
 ```
 
-The full example can be found here: [sample.serverside.callback.php](sample.serverside.callback.php)
+Using the following **callback.php** you can retrieve the finished process and download the output file.
 
-Client Side Uploading
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+use \CloudConvert\Api;
+use \CloudConvert\Process;
+$api = new Api("your_api_key");
+
+$process = new Process($api, $_REQUEST['url']);
+$process->refresh()->download("output.jpg");
+
+?>
+```
+
+
+Download of multiple output files
 -------------------
 
-The user can select the input file (PNG) from his computer and upload it directly to CloudConvert. Afterwards the status of the conversion is checked via AJAX.
+In some cases it might be possible that there are multiple output files (e.g. converting a multi-page PDF to JPG). You can download them all to one directory using the ``downloadAll()`` method.
 
-The example can be found here: [sample.clientside.php](sample.clientside.php)
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+use \CloudConvert\Api;
+$api = new Api("your_api_key");
 
+$process = $api->convert([
+        'inputformat' => 'pdf',
+        'outputformat' => 'jpg',
+        'converteroptions' => [
+            'page_range' => '1-3',
+        ],
+        'input' => 'download',
+        'file' => fopen('./tests/input.pdf', 'r'),
+    ])
+    ->wait()
+    ->downloadAll('./tests/');
+?>
+```
+
+Alternatively you can iterate over ``$process->output->files`` and download them seperately using ``$process->download($localfile, $remotefile)``.
+
+
+Catching Exceptions
+-------------------
+The following example shows how to catch the different exception types which can occur at conversions:
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+use \CloudConvert\Api;
+
+$api = new Api("your_api_key");
+
+try {
+
+    $api->convert([
+        'inputformat' => 'pdf',
+        'outputformat' => 'jpg',
+        'input' => 'upload',
+        'file' => fopen('./tests/input.pdf', 'r'),
+    ])
+        ->wait()
+        ->downloadAll('./tests/');
+
+} catch (\CloudConvert\Exceptions\ApiBadRequestException $e) {
+    echo "Something with your request is wrong: " . $e->getMessage();
+} catch (\CloudConvert\Exceptions\ApiConversionFailedException $e) {
+    echo "Conversion failed, maybe because of a broken input file: " . $e->getMessage();
+}  catch (\CloudConvert\Exceptions\ApiTemporaryUnavailableException $e) {
+    echo "API temporary unavailable: " . $e->getMessage() ."\n";
+    echo "We should retry the conversion in " . $e->retryAfter . " seconds";
+} catch (Exception $e) {
+    // network problems, etc..
+    echo "Something else went wrong: " . $e->getMessage() . "\n";
+}
+```
+
+
+
+How to build the documentation?
+-------------------------------
+
+Documentation is based on phpdocumentor. To install it with other quality tools,
+you can install local npm project in a clone a project
+
+    git clone https://github.com/LunawebLtd/cloudconvert-php.git
+    cd cloudconvert-php
+    php composer.phar install
+    npm install
+
+To generate documentation, it's possible to use directly:
+
+    grunt phpdocs
+
+Documentation is available in docs/ directory.
+
+How to run tests?
+-----------------
+
+Tests are based on phpunit. To install it with other quality tools, you can install
+local npm project in a clone a project
+
+    git https://github.com/LunawebLtd/cloudconvert-php.git
+    cd cloudconvert-php
+    php composer.phar install
+    npm install
+
+Edit **phpunit.xml** file with your API Key to pass functionals tests. Then,
+you can run directly unit and functionals tests with grunt.
+
+    grunt
 
 
 Resources
 ---------
 
-* [API Documentation](https://cloudconvert.org/page/api)
-* [Conversion Types](https://cloudconvert.org/formats)
-* [CloudConvert Blog](https://cloudconvert.org/blog)
+* [API Documentation](https://cloudconvert.com/apidoc)
+* [Conversion Types](https://cloudconvert.com/formats)
+* [CloudConvert Blog](https://cloudconvert.com/blog)
