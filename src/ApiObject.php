@@ -13,27 +13,23 @@ namespace CloudConvert;
  */
 class ApiObject
 {
-    /*
-     ** The \CloudConvert\Api instance
-     */
+    /** @var Api */
     protected $api;
-    /*
-     * The Object URL
-     */
+    /** @var string */
     public $url;
-
-    /*
+    /**
      * Contains the object data returned from the CloudConvert API
+     * @var array
      */
     protected $data = array();
 
     /**
      * Construct a new ApiObject instance
      *
-     * @param $api The \CloudConvert\Api instance
-     * @param $url The Object URL
+     * @param Api $api
+     * @param string $url The Object URL
      *
-     * @throws InvalidParameterException if one parameter is missing or with bad value
+     * @throws Exceptions\InvalidParameterException If one parameter is missing or with bad value
      */
     public function __construct(Api $api, $url)
     {
@@ -67,6 +63,9 @@ class ApiObject
 
     /**
      * Access Object data via $object->prop->subprop
+     *
+     * @param string $name
+     * @return null|object
      */
     public function __get($name)
     {
@@ -80,6 +79,9 @@ class ApiObject
 
     /**
      * Converts multi dimensional arrays into objects
+     *
+     * @param array $d
+     * @return object
      */
     private static function arrayToObject($d)
     {
@@ -89,7 +91,7 @@ class ApiObject
              * Using [__CLASS__, __METHOD__] (Magic constant)
              * for recursive call
              */
-            return (object) array_map([__CLASS__, __METHOD__], $d);
+            return (object)array_map([__CLASS__, __METHOD__], $d);
         } else {
             // Return object
             return $d;
