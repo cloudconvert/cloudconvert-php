@@ -4,6 +4,7 @@
  */
 namespace CloudConvert;
 
+use CloudConvert\Exceptions\InvalidParameterException;
 use GuzzleHttp\Stream\Stream;
 
 /**
@@ -19,8 +20,8 @@ class Process extends ApiObject
     /**
      * Construct a new Process instance
      *
-     * @param $api The \CloudConvert\Api instance
-     * @param $url The Process URL
+     * @param Api $api
+     * @param string $url The Process URL
      * @return \CloudConvert\Process
      *
      * @throws InvalidParameterException if one parameter is missing or with bad value
@@ -69,14 +70,15 @@ class Process extends ApiObject
     /**
      * Download process files from API
      *
-     * @param $localfile Local file name (or directory) the file should be downloaded to
-     * @param $remotefile Remote file name which should be downloaded (if there are
+     * @param string $localfile Local file name (or directory) the file should be downloaded to
+     * @param string $remotefile Remote file name which should be downloaded (if there are
      *         multiple output files available)
      *
      * @return \CloudConvert\Process
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
      * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * ª@throws Exceptions\InvalidParameterException
      *
      */
     public function download($localfile = null, $remotefile = null)
@@ -85,11 +87,11 @@ class Process extends ApiObject
             throw new Exceptions\ApiException("There is no output file available (yet)", 400);
         }
 
-        if (isset($localfile) && is_dir($localfile) &&  isset($this->output->filename)) {
+        if (isset($localfile) && is_dir($localfile) && isset($this->output->filename)) {
             $localfile = realpath($localfile) . DIRECTORY_SEPARATOR
-                . (isset($remotefile) ? $remotefile  : $this->output->filename);
-        } elseif (!isset($localfile) &&  isset($this->output->filename)) {
-            $localfile = (isset($remotefile) ? $remotefile  : $this->output->filename);
+                . (isset($remotefile) ? $remotefile : $this->output->filename);
+        } elseif (!isset($localfile) && isset($this->output->filename)) {
+            $localfile = (isset($remotefile) ? $remotefile : $this->output->filename);
         }
 
         if (!isset($localfile) || is_dir($localfile)) {
@@ -97,7 +99,7 @@ class Process extends ApiObject
         }
 
         $local = Stream::factory(fopen($localfile, 'w'));
-        $download = $this->api->get($this->output->url . (isset($remotefile) ? '/' . $remotefile : '' ), false, false);
+        $download = $this->api->get($this->output->url . (isset($remotefile) ? '/' . $remotefile : ''), false, false);
         $local->write($download);
         return $this;
     }
@@ -105,7 +107,7 @@ class Process extends ApiObject
     /**
      * Download all output process files from API
      *
-     * @param $directory Local directory the files should be downloaded to
+     * @param string $directory Local directory the files should be downloaded to
      *
      * @return \CloudConvert\Process
      *

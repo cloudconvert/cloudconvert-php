@@ -4,6 +4,7 @@
  */
 namespace CloudConvert;
 
+use CloudConvert\Exceptions\InvalidParameterException;
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ParseException;
@@ -23,26 +24,31 @@ class Api
 {
     /**
      * Url to communicate with CloudConvert API
+     * @var string
      */
     private $endpoint = 'api.cloudconvert.com';
     /**
      * Protocol (http or https) to communicate with CloudConvert API
+     * @var string
      */
     private $protocol = 'https';
     /**
      * API Key of the current application
+     * @var string
      */
     private $api_key = null;
     /**
      * Contain http client connection
+     * @var GuzzleClient
      */
     private $http_client = null;
+
     /**
      * Construct a new wrapper instance
      *
-     * @param $api_key key of your application.
+     * @param string $api_key Key of your application.
      * You can get your API Key on https://cloudconvert.com/user/profile
-     * @param $http_client instance of http client
+     * @param GuzzleClient $http_client Instance of http client
      *
      * @throws InvalidParameterException if one parameter is missing or with bad value
      */
@@ -57,18 +63,22 @@ class Api
         $this->api_key = $api_key;
         $this->http_client = $http_client;
     }
+
     /**
      * This is the main method of this wrapper. It will
      * sign a given query and return its result.
      *
-     * @param $method HTTP method of request (GET,POST,PUT,DELETE)
-     * @param $path relative url of API request
-     * @param $content body of the request
-     * @param $is_authenticated if the request use authentication
+     * @param string $method HTTP method of request (GET,POST,PUT,DELETE)
+     * @param string $path relative url of API request
+     * @param string $content body of the request
+     * @param boolean $is_authenticated if the request use authentication
      *
-     * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
+     * @throws Exception
+     * @throws Exceptions\ApiBadRequestException
+     * @throws Exceptions\ApiConversionFailedException
+     * @throws Exceptions\ApiException if the CloudConvert API returns an error
+     * @throws Exceptions\ApiTemporaryUnavailableException
      * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
-     *
      */
     private function rawCall($method, $path, $content = null, $is_authenticated = true)
     {
@@ -118,7 +128,7 @@ class Api
                 return $response->json();
             } elseif ($response->getBody()->isReadable()) {
                 // if response is a download, return the stream
-                return  $response->getBody();
+                return $response->getBody();
             }
         } catch (Exception $e) {
             if (!$e->getResponse()) {
@@ -151,12 +161,13 @@ class Api
             }
         }
     }
+
     /**
      * Wrap call to CloudConvert APIs for GET requests
      *
-     * @param $path path ask inside api
-     * @param $content content to send inside body of request
-     * @param $is_authenticated if the request use authentication
+     * @param string $path path ask inside api
+     * @param string $content content to send inside body of request
+     * @param boolean $is_authenticated if the request use authentication
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
      * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
@@ -166,12 +177,13 @@ class Api
     {
         return $this->rawCall("GET", $path, $content, $is_authenticated);
     }
+
     /**
      * Wrap call to CloudConvert APIs for POST requests
      *
-     * @param $path path ask inside api
-     * @param $content content to send inside body of request
-     * @param $is_authenticated if the request use authentication
+     * @param string $path path ask inside api
+     * @param string $content content to send inside body of request
+     * @param boolean $is_authenticated if the request use authentication
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
      * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
@@ -181,12 +193,13 @@ class Api
     {
         return $this->rawCall("POST", $path, $content, $is_authenticated);
     }
+
     /**
      * Wrap call to CloudConvert APIs for PUT requests
      *
-     * @param $path path ask inside api
-     * @param $content content to send inside body of request
-     * @param $is_authenticated if the request use authentication
+     * @param string $path path ask inside api
+     * @param string $content content to send inside body of request
+     * @param boolean $is_authenticated if the request use authentication
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
      * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
@@ -196,12 +209,13 @@ class Api
     {
         return $this->rawCall("PUT", $path, $content, $is_authenticated);
     }
+
     /**
      * Wrap call to CloudConvert APIs for DELETE requests
      *
-     * @param $path path ask inside api
-     * @param $content content to send inside body of request
-     * @param $is_authenticated if the request use authentication
+     * @param string $path path ask inside api
+     * @param string $content content to send inside body of request
+     * @param boolean $is_authenticated if the request use authentication
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
      * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
@@ -211,20 +225,27 @@ class Api
     {
         return $this->rawCall("DELETE", $path, $content, $is_authenticated);
     }
+
     /**
      * Get the current API Key
+     *
+     * @return string
      */
     public function getApiKey()
     {
         return $this->api_key;
     }
+
     /**
      * Return instance of http client
+     *
+     * @return GuzzleClient
      */
     public function getHttpClient()
     {
         return $this->http_client;
     }
+
     /**
      * Create a new Process
      *
