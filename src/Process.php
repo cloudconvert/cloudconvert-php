@@ -94,7 +94,7 @@ class Process extends ApiObject
             throw new Exceptions\InvalidParameterException("localfile parameter is not set correctly");
         }
 
-        return $this->get(fopen($localfile, 'w'), $remotefile);
+        return $this->downloadStream(fopen($localfile, 'w'), $remotefile);
     }
 
     /**
