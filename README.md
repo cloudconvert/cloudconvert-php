@@ -6,6 +6,7 @@ This is a lightweight wrapper for the [CloudConvert](https://cloudconvert.com) A
 Feel free to use, improve or modify this wrapper! If you have questions contact us or open an issue on GitHub.
 
 
+[![Build Status](https://travis-ci.org/cloudconvert/cloudconvert-php.svg?branch=master)](https://travis-ci.org/cloudconvert/cloudconvert-php)
 
 
 Quickstart
@@ -53,9 +54,9 @@ Then, you can install CloudConvert APIs wrapper and dependencies with:
 
 This will install ``cloudconvert/cloudconvert-php`` to ``./vendor``, along with other dependencies including ``autoload.php``.
 
-Install with Phar
+Install manually
 -------------------
-If you don't want to use composer, you can download the .phar release from the "Releases" tab on GitHub.
+If you don't want to use composer, you can download the **cloudconvert-php.phar** release from the [Releases](https://github.com/cloudconvert/cloudconvert-php/releases) tab on GitHub. The .phar file is basically a ZIP file which contains all dependencies and can be used as shown here:
 
 ```php
 <?php
