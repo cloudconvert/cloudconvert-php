@@ -8,5 +8,6 @@
 output.pdf
 node_modules
 vendor
+docs
 composer.lock
 composer.phar
