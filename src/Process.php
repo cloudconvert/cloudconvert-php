@@ -78,15 +78,11 @@ class Process extends ApiObject
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
      * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
-     * ª@throws Exceptions\InvalidParameterException
+     * @throws Exceptions\InvalidParameterException
      *
      */
     public function download($localfile = null, $remotefile = null)
     {
-        if (!isset($this->output->url)) {
-            throw new Exceptions\ApiException("There is no output file available (yet)", 400);
-        }
-
         if (isset($localfile) && is_dir($localfile) && isset($this->output->filename)) {
             $localfile = realpath($localfile) . DIRECTORY_SEPARATOR
                 . (isset($remotefile) ? $remotefile : $this->output->filename);
@@ -98,7 +94,29 @@ class Process extends ApiObject
             throw new Exceptions\InvalidParameterException("localfile parameter is not set correctly");
         }
 
-        $local = Stream::factory(fopen($localfile, 'w'));
+        return $this->get(fopen($localfile, 'w'), $remotefile);
+    }
+
+    /**
+     * Download process files from API and write to a given stream
+     *
+     * @param resource $stream Stream to write the downloaded data to
+     * @param string $remotefile Remote file name which should be downloaded (if there are
+     *         multiple output files available)
+     *
+     * @return \CloudConvert\Process
+     *
+     * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
+     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     *
+     */
+    public function downloadStream($stream, $remotefile = null)
+    {
+        if (!isset($this->output->url)) {
+            throw new Exceptions\ApiException("There is no output file available (yet)", 400);
+        }
+
+        $local = Stream::factory($stream);
         $download = $this->api->get($this->output->url . (isset($remotefile) ? '/' . $remotefile : ''), false, false);
         $local->write($download);
         return $this;
