@@ -43,6 +43,9 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $process->delete();
     }
 
+
+
+
     /**
      * Test if download of output file works
      */
@@ -129,12 +132,12 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             ],
             'file' => fopen(__DIR__ . '/input.pdf', 'r'),
         ])->downloadAll(__DIR__);
+        $this->assertFileExists(__DIR__ . '/input-0.jpg');
         $this->assertFileExists(__DIR__ . '/input-1.jpg');
-        $this->assertFileExists(__DIR__ . '/input-2.jpg');
         // cleanup
         $process->delete();
+        @unlink(__DIR__ . '/input-0.jpg');
         @unlink(__DIR__ . '/input-1.jpg');
-        @unlink(__DIR__ . '/input-2.jpg');
     }
 
 
@@ -158,6 +161,30 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $process->delete();
 
     }
+
+
+
+    /**
+     * Test if multiple convert shortcut works
+     */
+    public function testIfMultipleConvertShortcutWorks()
+    {
+        foreach(["input.png","input.png","input.png"] as $file) {
+            $process = $this->api->convert([
+                'inputformat' => 'png',
+                'outputformat' => 'pdf',
+                'input' => 'upload',
+                'wait' => true,
+                'file' => fopen(__DIR__ . '/' . $file, 'r'),
+            ]);
+            $this->assertEquals($process->step, 'finished');
+            $this->assertEquals($process->output->ext, 'pdf');
+            $this->process = $process;
+            // cleanup
+            $process->delete();
+        }
+    }
+
 
 
 }
