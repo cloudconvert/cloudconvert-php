@@ -110,7 +110,7 @@ class Process extends ApiObject
      * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
      *
      */
-    public function get($stream, $remotefile = null)
+    public function downloadStream($stream, $remotefile = null)
     {
         if (!isset($this->output->url)) {
             throw new Exceptions\ApiException("There is no output file available (yet)", 400);
