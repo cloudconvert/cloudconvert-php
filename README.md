@@ -113,6 +113,41 @@ $process->refresh()->download("output.jpg");
 ```
 
 
+
+User uploaded input files
+-------------------
+
+If your input files are provided by your users, you can let your users directly upload their files to CloudConvert (instead of uploading them to your server first and afterwards sending them to CloudConvert).
+The following example shows how this can be implemented easily.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+use \CloudConvert\Api;
+$api = new Api("your_api_key");
+
+$process = $api->createProcess([
+    'inputformat' => 'png',
+    'outputformat' => 'jpg',
+]);
+
+$process->start([
+    'input' => 'upload',
+    'outputformat' => 'jpg',
+    'converteroptions' => [
+        'quality' => 75,
+    ],
+    'callback' => 'http://_INSERT_PUBLIC_URL_TO_/callback.php'
+]);
+?>
+<form action="<?=$process->upload->url?>" method="POST" enctype="multipart/form-data">
+     <input type="file" name="file">
+     <input type="submit">
+</form>
+
+```
+
+
 Download of multiple output files
 -------------------
 

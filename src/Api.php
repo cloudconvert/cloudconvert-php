@@ -10,7 +10,6 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ParseException;
 use GuzzleHttp\Stream\Stream;
 
-
 /**
  * Base Wrapper to manage login and exchanges with CloudConvert API
  *
