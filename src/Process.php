@@ -45,7 +45,46 @@ class Process extends ApiObject
 
     public function start($parameters)
     {
+        if (isset($parameters['file']) && gettype($parameters['file']) == 'resource') {
+            $file = $parameters['file'];
+            unset($parameters['file']);
+            if ($parameters['wait']) {
+                unset($parameters['wait']);
+                $wait = true;
+            }
+        }
         $this->data = $this->api->post($this->url, $parameters, false);
+        if (isset($file)) {
+            $this->upload($file);
+        }
+        if (isset($wait)) {
+            $this->wait();
+        }
+        return $this;
+    }
+
+    /**
+     * Uploads the input file. See https://cloudconvert.com/apidoc#upload
+     *
+     * @param string $filename Filename of the input file
+     * @return \CloudConvert\Process
+     *
+     * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
+     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     *
+     */
+
+    public function upload($stream, $filename = null)
+    {
+        if (!isset($this->upload->url)) {
+            throw new Exceptions\ApiException("Upload is not allowed in this process state", 400);
+        }
+
+        if (empty($filename)) {
+            $metadata = stream_get_meta_data($stream);
+            $filename = basename($metadata['uri']);
+        }
+        $this->api->put($this->upload->url . "/" . $filename, $stream, false);
         return $this;
     }
 
@@ -135,7 +174,7 @@ class Process extends ApiObject
      */
     public function downloadAll($directory = null)
     {
-        if (!isset($this->output->files)) { // there are not multiple output files -> do normal download
+        if (!isset($this->output->files)) { // the are not multiple output files -> do normal downloader
             return $this->download($directory);
         }
 

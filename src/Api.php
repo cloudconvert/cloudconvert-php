@@ -10,6 +10,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ParseException;
 use GuzzleHttp\Stream\Stream;
 
+
 /**
  * Base Wrapper to manage login and exchanges with CloudConvert API
  *
@@ -90,36 +91,28 @@ class Api
         }
 
         $request = $this->http_client->createRequest($method, $url);
+
+
         if (is_array($content) && $method == 'GET') {
             $query = $request->getQuery();
             foreach ($content as $key => $value) {
                 $query->set($key, $value);
             }
-            $url .= '?' . $query;
+        } elseif (gettype($content) == 'resource' && $method == 'PUT') {
+            // is upload
+            $request->setBody(Stream::factory($content));
+
         } elseif (is_array($content)) {
-            // check if we upload anything
-            $isupload = false;
-            foreach ($content as $key => $value) {
-                if (gettype($value) == 'resource') {
-                    $isupload = true;
-                    break;
-                }
-            }
-            if ($isupload) {
-                $request = $this->http_client->createRequest('POST', $url, [
-                    'headers' => ['Content-Type' => 'multipart/form-data'],
-                    'body' => $content,
-                ]);
-            } else {
-                $body = json_encode($content);
-                $request->setBody(Stream::factory($body));
-                $request->setHeader('Content-Type', 'application/json; charset=utf-8');
-            }
+            $body = Stream::factory(json_encode($content));
+            $request->setBody(Stream::factory($body));
+            $request->setHeader('Content-Type', 'application/json; charset=utf-8');
         }
 
         if ($is_authenticated) {
             $request->setHeader('Authorization', 'Bearer ' . $this->api_key);
         }
+
+
 
 
         try {

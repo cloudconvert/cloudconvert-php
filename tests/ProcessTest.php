@@ -132,12 +132,12 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             ],
             'file' => fopen(__DIR__ . '/input.pdf', 'r'),
         ])->downloadAll(__DIR__);
-        $this->assertFileExists(__DIR__ . '/input-0.jpg');
         $this->assertFileExists(__DIR__ . '/input-1.jpg');
+        $this->assertFileExists(__DIR__ . '/input-2.jpg');
         // cleanup
         $process->delete();
-        @unlink(__DIR__ . '/input-0.jpg');
         @unlink(__DIR__ . '/input-1.jpg');
+        @unlink(__DIR__ . '/input-2.jpg');
     }
 
 
