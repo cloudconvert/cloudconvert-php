@@ -84,7 +84,7 @@ class Process extends ApiObject
             $metadata = stream_get_meta_data($stream);
             $filename = basename($metadata['uri']);
         }
-        $this->api->put($this->upload->url . "/" . $filename, $stream, false);
+        $this->api->put($this->upload->url . "/" . rawurlencode($filename), $stream, false);
         return $this;
     }
 
@@ -156,7 +156,7 @@ class Process extends ApiObject
         }
 
         $local = Stream::factory($stream);
-        $download = $this->api->get($this->output->url . (isset($remotefile) ? '/' . $remotefile : ''), false, false);
+        $download = $this->api->get($this->output->url . (isset($remotefile) ? '/' . rawurlencode($remotefile) : ''), false, false);
         $local->write($download);
         return $this;
     }
