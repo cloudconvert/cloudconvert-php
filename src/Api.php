@@ -102,7 +102,7 @@ class Api
             $request->setBody(Stream::factory($content));
 
         } elseif (is_array($content)) {
-            $body = Stream::factory(json_encode($content));
+            $body = json_encode($content);
             $request->setBody(Stream::factory($body));
             $request->setHeader('Content-Type', 'application/json; charset=utf-8');
         }
