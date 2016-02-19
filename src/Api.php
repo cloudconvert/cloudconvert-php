@@ -7,8 +7,7 @@ namespace CloudConvert;
 use CloudConvert\Exceptions\InvalidParameterException;
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\ParseException;
-use GuzzleHttp\Stream\Stream;
+use GuzzleHttp\Exception\RequestException;
 
 /**
  * Base Wrapper to manage login and exchanges with CloudConvert API
@@ -72,13 +71,14 @@ class Api
      * @param string $path relative url of API request
      * @param string $content body of the request
      * @param boolean $is_authenticated if the request use authentication
+     * @return mixed
      *
      * @throws Exception
      * @throws Exceptions\ApiBadRequestException
      * @throws Exceptions\ApiConversionFailedException
      * @throws Exceptions\ApiException if the CloudConvert API returns an error
      * @throws Exceptions\ApiTemporaryUnavailableException
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      */
     private function rawCall($method, $path, $content = null, $is_authenticated = true)
     {
@@ -89,49 +89,48 @@ class Api
             $url = $this->protocol . '://' . $this->endpoint . $path;
         }
 
-        $request = $this->http_client->createRequest($method, $url);
+        $options = array(
+            'query' => array(),
+            'body' => null,
+            'headers' => array()
+        );
 
 
         if (is_array($content) && $method == 'GET') {
-            $query = $request->getQuery();
-            foreach ($content as $key => $value) {
-                $query->set($key, $value);
-            }
+            $options['query'] = $content;
         } elseif (gettype($content) == 'resource' && $method == 'PUT') {
             // is upload
-            $request->setBody(Stream::factory($content));
+            $options['body'] = \GuzzleHttp\Psr7\stream_for($content);
 
         } elseif (is_array($content)) {
             $body = json_encode($content);
-            $request->setBody(Stream::factory($body));
-            $request->setHeader('Content-Type', 'application/json; charset=utf-8');
+            $options['body'] = \GuzzleHttp\Psr7\stream_for($body);
+            $options['headers']['Content-Type'] = 'application/json; charset=utf-8';
         }
 
         if ($is_authenticated) {
-            $request->setHeader('Authorization', 'Bearer ' . $this->api_key);
+            $options['headers']['Authorization'] = 'Bearer ' . $this->api_key;
         }
 
-
-
-
         try {
-            $response = $this->http_client->send($request);
-            if (strpos($response->getHeader('Content-Type'), 'application/json') === 0) {
-                return $response->json();
+            $response = $this->http_client->request($method, $url, $options);
+            if (strpos($response->getHeader('Content-Type')[0], 'application/json') === 0) {
+                return json_decode($response->getBody(), true);
             } elseif ($response->getBody()->isReadable()) {
                 // if response is a download, return the stream
                 return $response->getBody();
             }
-        } catch (Exception $e) {
+        } catch (RequestException $e) {
             if (!$e->getResponse()) {
                 throw $e;
             }
             // check if response is JSON error message from the CloudConvert API
-            try {
-                $json = $e->getResponse()->json();
-            } catch (ParseException $parseexception) {
-                throw $e;
+            $json = json_decode($e->getResponse()->getBody(), true);
+
+            if (JSON_ERROR_NONE !== json_last_error()) {
+                throw new \RuntimeException('Error parsing JSON response');
             }
+
             if (isset($json['message']) || isset($json['error'])) {
                 $msg = isset($json['error']) ? $json['error'] : $json['message'];
                 $code = $e->getResponse()->getStatusCode();
@@ -162,7 +161,7 @@ class Api
      * @param boolean $is_authenticated if the request use authentication
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      *
      */
     public function get($path, $content = null, $is_authenticated = true)
@@ -178,7 +177,7 @@ class Api
      * @param boolean $is_authenticated if the request use authentication
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      *
      */
     public function post($path, $content, $is_authenticated = true)
@@ -194,7 +193,7 @@ class Api
      * @param boolean $is_authenticated if the request use authentication
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      *
      */
     public function put($path, $content, $is_authenticated = true)
@@ -210,7 +209,7 @@ class Api
      * @param boolean $is_authenticated if the request use authentication
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      *
      */
     public function delete($path, $content = null, $is_authenticated = true)
@@ -245,7 +244,7 @@ class Api
      * @return \CloudConvert\Process
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      *
      */
     public function createProcess($parameters)
@@ -261,7 +260,7 @@ class Api
      * @return \CloudConvert\Process
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      *
      */
     public function convert($parameters)

@@ -52,7 +52,7 @@ class ApiObject
      * @return \CloudConvert\ApiObject
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      *
      */
     public function refresh($parameters = null)
