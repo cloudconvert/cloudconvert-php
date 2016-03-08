@@ -5,7 +5,6 @@
 namespace CloudConvert;
 
 use CloudConvert\Exceptions\InvalidParameterException;
-use GuzzleHttp\Stream\Stream;
 
 /**
  * CloudConvert Process Wrapper
@@ -39,7 +38,7 @@ class Process extends ApiObject
      * @return \CloudConvert\Process
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      *
      */
 
@@ -48,7 +47,7 @@ class Process extends ApiObject
         if (isset($parameters['file']) && gettype($parameters['file']) == 'resource') {
             $file = $parameters['file'];
             unset($parameters['file']);
-            if ($parameters['wait']) {
+            if (isset($parameters['wait']) && $parameters['wait']) {
                 unset($parameters['wait']);
                 $wait = true;
             }
@@ -70,7 +69,7 @@ class Process extends ApiObject
      * @return \CloudConvert\Process
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      *
      */
 
@@ -94,7 +93,7 @@ class Process extends ApiObject
      * @return \CloudConvert\Process
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      *
      */
     public function wait()
@@ -116,7 +115,7 @@ class Process extends ApiObject
      * @return \CloudConvert\Process
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      * @throws Exceptions\InvalidParameterException
      *
      */
@@ -146,7 +145,7 @@ class Process extends ApiObject
      * @return \CloudConvert\Process
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      *
      */
     public function downloadStream($stream, $remotefile = null)
@@ -155,7 +154,7 @@ class Process extends ApiObject
             throw new Exceptions\ApiException("There is no output file available (yet)", 400);
         }
 
-        $local = Stream::factory($stream);
+        $local = \GuzzleHttp\Psr7\stream_for($stream);
         $download = $this->api->get($this->output->url . (isset($remotefile) ? '/' . rawurlencode($remotefile) : ''), false, false);
         $local->write($download);
         return $this;
@@ -169,7 +168,7 @@ class Process extends ApiObject
      * @return \CloudConvert\Process
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      *
      */
     public function downloadAll($directory = null)
@@ -192,7 +191,7 @@ class Process extends ApiObject
      * @return \CloudConvert\Process
      *
      * @throws \CloudConvert\Exceptions\ApiException if the CloudConvert API returns an error
-     * @throws \GuzzleHttp\Exception if there is a general HTTP / network error
+     * @throws \GuzzleHttp\Exception\GuzzleException if there is a general HTTP / network error
      *
      */
     public function delete()
