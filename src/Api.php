@@ -114,7 +114,7 @@ class Api
 
         try {
             $response = $this->http_client->request($method, $url, $options);
-            if (strpos($response->getHeader('Content-Type')[0], 'application/json') === 0) {
+            if ($response->getHeader('Content-Type') && strpos($response->getHeader('Content-Type')[0], 'application/json') === 0) {
                 return json_decode($response->getBody(), true);
             } elseif ($response->getBody()->isReadable()) {
                 // if response is a download, return the stream
@@ -142,7 +142,7 @@ class Api
                     throw new Exceptions\ApiTemporaryUnavailableException(
                         $msg,
                         $code,
-                        $e->getResponse()->getHeader('Retry-After')[0]
+                        $e->getResponse()->getHeader('Retry-After') ? $e->getResponse()->getHeader('Retry-After')[0] : null
                     );
                 } else {
                     throw new Exceptions\ApiException($msg, $code);
