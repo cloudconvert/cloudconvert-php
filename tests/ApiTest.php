@@ -4,7 +4,10 @@ namespace CloudConvert\tests;
 use CloudConvert\Api;
 use CloudConvert\Exceptions\ApiTemporaryUnavailableException;
 use GuzzleHttp\Client;
-use GuzzleHttp\Subscriber\Mock;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
+
 
 /**
  * Tests of Api class
@@ -105,11 +108,16 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testIfApiTemporaryUnavailableExceptionIsThrown()
     {
-        $client = new Client();
-        $mock = new Mock([
-            "HTTP/1.1 503 Service Unavailable\r\nRetry-After: 30\r\nContent-Type: application/json; charset=utf-8\r\n\r\n{\"message\":\"API unavailable. Please try later.\"}"
+
+        $mock = new MockHandler([
+            new Response(503, ['Retry-After' => 30, 'Content-Type' => 'application/json; charset=utf-8'], "{\"message\":\"API unavailable. Please try later.\"}"),
         ]);
-        $client->getEmitter()->attach($mock);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+
+
+
         $api = new Api($this->api_key, $client);
         $invoker = self::getPrivateMethod('rawCall');
 
