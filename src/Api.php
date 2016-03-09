@@ -142,7 +142,7 @@ class Api
                     throw new Exceptions\ApiTemporaryUnavailableException(
                         $msg,
                         $code,
-                        $e->getResponse()->getHeader('Retry-After')
+                        $e->getResponse()->getHeader('Retry-After')[0]
                     );
                 } else {
                     throw new Exceptions\ApiException($msg, $code);
