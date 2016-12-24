@@ -155,7 +155,8 @@ class Process extends ApiObject
         }
 
         $local = \GuzzleHttp\Psr7\stream_for($stream);
-        $download = $this->api->get($this->output->url . (isset($remotefile) ? '/' . rawurlencode($remotefile) : ''), false, false);
+        $path = $this->output->url . (isset($remotefile) ? '/' . rawurlencode($remotefile) : '');
+        $download = $this->api->get($path, false, false);
         $local->write($download);
         return $this;
     }

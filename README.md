@@ -42,7 +42,7 @@ Add the repository in your **composer.json** file or, if you don't already have 
     "name": "Example Application",
     "description": "This is an example",
     "require": {
-        "cloudconvert/cloudconvert-php": "dev-master"
+        "cloudconvert/cloudconvert-php": "2.2.*"
     }
 }
 

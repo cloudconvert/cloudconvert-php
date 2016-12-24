@@ -11,3 +11,4 @@ vendor
 docs
 composer.lock
 composer.phar
+cloudconvert-php.phar
