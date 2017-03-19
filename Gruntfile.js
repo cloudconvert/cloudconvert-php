@@ -43,10 +43,14 @@ module.exports = function (grunt) {
         },
         phpunit: {
             unit: {
-                dir: 'tests'
+                testsuite: 'tests'
+            },
+            integration: {
+                testsuite: 'integration'
             },
             options: {
                 bin: 'vendor/bin/phpunit',
+                configuration: 'phpunit.xml',
                 colors: true,
                 testdox: true
             }

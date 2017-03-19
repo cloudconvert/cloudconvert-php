@@ -1,7 +1,11 @@
 <?php
-namespace CloudConvert\tests;
+namespace CloudConvert\Tests;
 
 use CloudConvert\Api;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 
 /**
  * Tests of Process class
@@ -17,14 +21,26 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->api_key = getenv('API_KEY');
-        $this->api = new Api($this->api_key);
+        $this->api_key = "tests";
+
+        $this->mock = new MockHandler([
+            new Response(200, ['Content-Type' => 'application/json; charset=utf-8'], "{\"url\":\"//processurl\"}"),
+            new Response(200, ['Content-Type' => 'application/json; charset=utf-8'], "{\"url\":\"//processurl\", \"step\":\"input\", \"upload\": {\"url\":\"//processurl/upload\"}}"),
+        ]);
+
+        $handler = HandlerStack::create($this->mock);
+        $client = new Client(['handler' => $handler]);
+
+        $this->api = new Api($this->api_key, $client);
+
     }
 
+
+
     /**
-     * Test if process with uploading an input file (input.png) works
+     * Test if  uploading an input file works
      */
-    public function testIfProcessWithUploadWorks()
+    public function testIfUploadWorks()
     {
         $process = $this->api->createProcess([
             'inputformat' => 'png',
@@ -32,18 +48,48 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         ]);
         $process->start([
             'input' => 'upload',
-            'outputformat' => 'pdf',
-            'wait' => true,
-            'file' => fopen(__DIR__ . '/input.png', 'r'),
+            'outputformat' => 'pdf'
         ]);
-        $this->assertEquals($process->step, 'finished');
-        $this->assertEquals($process->output->ext, 'pdf');
-        $this->process = $process;
-        // cleanup
-        $process->delete();
+
+
+        $this->mock->append(new Response(200, ['Content-Type' => 'application/json; charset=utf-8'], "{\"message\":\"File uploaded\"}"));
+
+        $process->upload(fopen('data://text/plain,pngdata', 'r'), "test.png");
+
+        $lastRequest = $this->mock->getLastRequest();
+
+        $this->assertEquals('PUT', $lastRequest->getMethod());
+        $this->assertEquals('/upload/test.png', $lastRequest->getUri()->getPath());
+        $this->assertEquals(7, $lastRequest->getBody()->getSize());
+
     }
 
 
+    /**
+     * Test if process with uploading an input file  works
+     */
+    public function testIfProcessWithUploadWorks()
+    {
+        $process = $this->api->createProcess([
+            'inputformat' => 'png',
+            'outputformat' => 'pdf',
+        ]);
+
+        $this->mock->append(new Response(200, ['Content-Type' => 'application/json; charset=utf-8'], "{\"message\":\"File uploaded\"}"));
+        $this->mock->append(new Response(200, ['Content-Type' => 'application/json; charset=utf-8'], "{\"step\":\"finished\", \"output\": {\"ext\":\"pdf\"}}"));
+
+        $process->start([
+            'input' => 'upload',
+            'outputformat' => 'pdf',
+            'wait' => true,
+            'file' => fopen('data://text/plain,pngdata', 'r'),
+        ]);
+
+
+        $this->assertEquals('finished', $process->step);
+        $this->assertEquals('pdf', $process->output->ext);
+
+    }
 
 
     /**
@@ -55,64 +101,24 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             'inputformat' => 'png',
             'outputformat' => 'pdf',
         ]);
+
+        $this->mock->append(new Response(200, ['Content-Type' => 'application/json; charset=utf-8'], "{\"step\":\"finished\", \"output\": {\"url\":\"//outputurl\"}}"));
+        $this->mock->append(new Response(200, ['Content-Type' => 'text/plain'], "outputfile"));
+
+
         $process->start([
             'input' => 'upload',
-            'outputformat' => 'pdf',
-            'wait' => true,
-            'file' => fopen(__DIR__ . '/input.png', 'r'),
-        ])->download(__DIR__ . '/output.pdf');
-        $this->assertFileExists(__DIR__ . '/output.pdf');
-        // cleanup
-        $process->delete();
-        @unlink(__DIR__ . '/output.pdf');
+            'outputformat' => 'pdf'
+        ])
+            ->wait()
+            ->download(__DIR__ . '/output.tmp');
+
+        $this->assertFileExists(__DIR__ . '/output.tmp');
+        $this->assertEquals("outputfile", file_get_contents(__DIR__ . '/output.tmp'));
+
+        @unlink(__DIR__ . '/output.tmp');
     }
 
-
-    /**
-     * Test if process with uploading an input file (input.png) and custom options (quality) works
-     */
-    public function testIfProcessWithUploadAndCustomOptionsWorks()
-    {
-        $process = $this->api->createProcess([
-            'inputformat' => 'png',
-            'outputformat' => 'pdf',
-        ]);
-        $process->start([
-            'input' => 'upload',
-            'outputformat' => 'pdf',
-            'wait' => true,
-            'converteroptions' => [
-                'quality' => 10,
-            ],
-            'file' => fopen(__DIR__ . '/input.png', 'r'),
-        ]);
-        $this->assertEquals($process->step, 'finished');
-        $this->assertEquals($process->output->ext, 'pdf');
-        $this->assertEquals($process->converter->options->quality, 10);
-        // cleanup
-        $process->delete();
-    }
-
-    /**
-     * Test if process with downloading an input file from an URL works
-     */
-    public function testIfProcessWithInputDownloadWorks()
-    {
-        $process = $this->api->createProcess([
-            'inputformat' => 'png',
-            'outputformat' => 'jpg',
-        ]);
-        $process->start([
-            'input' => 'download',
-            'outputformat' => 'jpg',
-            'wait' => true,
-            'file' => 'https://cloudconvert.com/blog/wp-content/themes/cloudconvert/img/logo_96x60.png',
-        ]);
-        $this->assertEquals($process->step, 'finished');
-        $this->assertEquals($process->output->ext, 'jpg');
-        // cleanup
-        $process->delete();
-    }
 
     /**
      * Test if download of multiple output file works
@@ -123,21 +129,27 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             'inputformat' => 'pdf',
             'outputformat' => 'jpg',
         ]);
+
+        $this->mock->append(new Response(200, ['Content-Type' => 'application/json; charset=utf-8'], "{\"step\":\"finished\", \"output\": {\"url\":\"//outputurl\", \"filename\":\"output.zip\", \"files\": [\"output1.tmp\",\"output2.tmp\"]}}"));
+        $this->mock->append(new Response(200, ['Content-Type' => 'text/plain'], "outputfile"));
+        $this->mock->append(new Response(200, ['Content-Type' => 'text/plain'], "outputfile"));
+
         $process->start([
             'input' => 'upload',
             'outputformat' => 'jpg',
-            'wait' => true,
             'converteroptions' => [
                 'page_range' => '1-2',
-            ],
-            'file' => fopen(__DIR__ . '/input.pdf', 'r'),
-        ])->downloadAll(__DIR__);
-        $this->assertFileExists(__DIR__ . '/input-1.jpg');
-        $this->assertFileExists(__DIR__ . '/input-2.jpg');
-        // cleanup
-        $process->delete();
-        @unlink(__DIR__ . '/input-1.jpg');
-        @unlink(__DIR__ . '/input-2.jpg');
+            ]
+        ])
+            ->wait()
+            ->downloadAll(__DIR__);
+
+        $this->assertFileExists(__DIR__ . '/output1.tmp');
+        $this->assertFileExists(__DIR__ . '/output2.tmp');
+
+        @unlink(__DIR__ . '/output1.tmp');
+        @unlink(__DIR__ . '/output2.tmp');
+
     }
 
 
@@ -146,44 +158,17 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
      */
     public function testIfConvertShortcutWorks()
     {
+
+        $this->mock->append(new Response(200, ['Content-Type' => 'application/json; charset=utf-8'], "{\"step\":\"finished\", \"output\": {\"ext\":\"pdf\"}}"));
         $process = $this->api->convert([
             'input' => 'upload',
             'inputformat' => 'pdf',
             'outputformat' => 'jpg',
-            'wait' => true,
-            'converteroptions' => [
-                'page_range' => '1-2',
-            ],
-            'file' => fopen(__DIR__ . '/input.pdf', 'r'),
-        ]);
+        ])->wait();
         $this->assertEquals($process->step, 'finished');
-        // cleanup
-        $process->delete();
 
     }
 
-
-
-    /**
-     * Test if multiple convert shortcut works
-     */
-    public function testIfMultipleConvertShortcutWorks()
-    {
-        foreach(["input.png","input.png","input.png"] as $file) {
-            $process = $this->api->convert([
-                'inputformat' => 'png',
-                'outputformat' => 'pdf',
-                'input' => 'upload',
-                'wait' => true,
-                'file' => fopen(__DIR__ . '/' . $file, 'r'),
-            ]);
-            $this->assertEquals($process->step, 'finished');
-            $this->assertEquals($process->output->ext, 'pdf');
-            $this->process = $process;
-            // cleanup
-            $process->delete();
-        }
-    }
 
 
 

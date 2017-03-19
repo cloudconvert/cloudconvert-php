@@ -7,6 +7,9 @@ Feel free to use, improve or modify this wrapper! If you have questions contact 
 
 
 [![Build Status](https://travis-ci.org/cloudconvert/cloudconvert-php.svg?branch=master)](https://travis-ci.org/cloudconvert/cloudconvert-php)
+[![Latest Stable Version](https://poser.pugx.org/cloudconvert/cloudconvert-php/v/stable)](https://packagist.org/packages/cloudconvert/cloudconvert-php)
+[![Total Downloads](https://poser.pugx.org/cloudconvert/cloudconvert-php/downloads)](https://packagist.org/packages/cloudconvert/cloudconvert-php)
+[![License](https://poser.pugx.org/cloudconvert/cloudconvert-php/license)](https://packagist.org/packages/cloudconvert/cloudconvert-php)
 
 
 Quickstart
@@ -219,7 +222,7 @@ How to build the documentation?
 Documentation is based on phpdocumentor. To install it with other quality tools,
 you can install local npm project in a clone a project
 
-    git clone https://github.com/LunawebLtd/cloudconvert-php.git
+    git clone https://github.com/cloudconvert/cloudconvert-php.git
     cd cloudconvert-php
     php composer.phar install
     npm install
@@ -236,20 +239,26 @@ How to run tests?
 Tests are based on phpunit. To install it with other quality tools, you can install
 local npm project in a clone a project
 
-    git https://github.com/LunawebLtd/cloudconvert-php.git
+    git https://github.com/cloudconvert/cloudconvert-php.git
     cd cloudconvert-php
     php composer.phar install
     npm install
 
-Edit **phpunit.xml** file with your API Key to pass functionals tests. Then,
-you can run directly unit and functionals tests with grunt.
+Then, you can run directly run the unit tests with grunt.
 
     grunt
 
 
+How to run integration tests?
+-----------------
+
+By default, grunt does not run integration tests against the real CloudConvert API. To run integration tests, edit **phpunit.xml** file with your API Key. Then:
+
+    grunt phpunit:integration
+
 Resources
 ---------
 
-* [API Documentation](https://cloudconvert.com/apidoc)
+* [API Documentation](https://cloudconvert.com/api)
 * [Conversion Types](https://cloudconvert.com/formats)
 * [CloudConvert Blog](https://cloudconvert.com/blog)
