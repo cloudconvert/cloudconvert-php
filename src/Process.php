@@ -200,4 +200,22 @@ class Process extends ApiObject
         $this->api->delete($this->url, false, false);
         return $this;
     }
+
+    /**
+     * @return mixed
+     * @throws Exceptions\ApiException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function __toString()
+    {
+        if (! isset($this->output->url)) {
+            throw new Exceptions\ApiException("There is no output file available (yet)", 400);
+        }
+
+        $path = $this->output->url . (isset($remotefile) ? '/' . rawurlencode($remotefile) : '');
+
+        $response = $this->api->get($path, false, false);
+
+        return (string) $response;
+    }
 }
