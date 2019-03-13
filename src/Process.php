@@ -5,6 +5,7 @@
 namespace CloudConvert;
 
 use CloudConvert\Exceptions\InvalidParameterException;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * CloudConvert Process Wrapper
@@ -154,10 +155,16 @@ class Process extends ApiObject
             throw new Exceptions\ApiException("There is no output file available (yet)", 400);
         }
 
-        $local = \GuzzleHttp\Psr7\stream_for($stream);
-        $path = $this->output->url . (isset($remotefile) ? '/' . rawurlencode($remotefile) : '');
-        $download = $this->api->get($path, false, false);
-        $local->write($download);
+        $download = $this->api->get($this->output->url . (isset($remotefile) ? '/' . rawurlencode($remotefile) : ''), false, false);
+        if (!$download instanceof StreamInterface) {
+            throw new \Exception(
+                sprintf(
+                    '$download should be a StreamInterface, got %s',
+                    is_object($download) ? get_class($download) : gettype($download)
+                )
+            );
+        }
+        stream_copy_to_stream($download->detach(), $stream);
         return $this;
     }
 
