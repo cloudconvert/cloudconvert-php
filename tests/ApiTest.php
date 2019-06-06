@@ -1,7 +1,7 @@
 <?php
 namespace CloudConvert\Tests;
 
-use CloudConvert\Api;
+use CloudConvert\CloudConvert;
 use CloudConvert\Exceptions\ApiTemporaryUnavailableException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
@@ -32,14 +32,14 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     protected static function getPrivateMethod($name)
     {
-        $class = new \ReflectionClass('CloudConvert\Api');
+        $class = new \ReflectionClass('CloudConvert\CloudConvert');
         $method = $class->getMethod($name);
         $method->setAccessible(true);
         return $method;
     }
     protected static function getPrivateProperty($name)
     {
-        $class = new \ReflectionClass('CloudConvert\Api');
+        $class = new \ReflectionClass('CloudConvert\CloudConvert');
         $property = $class->getProperty($name);
         $property->setAccessible(true);
         return $property;
@@ -58,7 +58,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
 
-        $api = new Api($this->api_key, $client);
+        $api = new CloudConvert($this->api_key, $client);
 
         $invoker = self::getPrivateMethod('rawCall');
         $result = $invoker->invokeArgs($api, array(
@@ -89,7 +89,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
 
-        $api = new Api($this->api_key, $client);
+        $api = new CloudConvert($this->api_key, $client);
 
         $invoker = self::getPrivateMethod('rawCall');
         $result = $invoker->invokeArgs($api, array(
@@ -123,7 +123,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
 
-        $api = new Api($this->api_key, $client);
+        $api = new CloudConvert($this->api_key, $client);
 
         $process = $api->createProcess(array(
             'inputformat' => 'pdf',
@@ -148,7 +148,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $client = new Client(['handler' => $handler]);
 
 
-        $api = new Api($this->api_key, $client);
+        $api = new CloudConvert($this->api_key, $client);
 
         $this->setExpectedException('CloudConvert\Exceptions\ApiBadRequestException', 'This conversiontype is not supported!', 400);
 
@@ -173,7 +173,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $client = new Client(['handler' => $handler]);
 
 
-        $api = new Api($this->api_key, $client);
+        $api = new CloudConvert($this->api_key, $client);
 
         $invoker = self::getPrivateMethod('rawCall');
 

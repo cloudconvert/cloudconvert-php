@@ -1,0 +1,12 @@
+{
+  "data": {
+    "id": 1,
+    "username": "Username",
+    "email": "me@example.com",
+    "created_at": "2018-12-01T22:26:29+00:00",
+    "credits": 4434,
+    "links": {
+      "self": "https://api.cloudconvert.com/v2/users/1"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 <?php
 namespace CloudConvert\Tests;
 
-use CloudConvert\Api;
+use CloudConvert\CloudConvert;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -31,7 +31,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $handler = HandlerStack::create($this->mock);
         $client = new Client(['handler' => $handler]);
 
-        $this->api = new Api($this->api_key, $client);
+        $this->api = new CloudConvert($this->api_key, $client);
 
     }
 

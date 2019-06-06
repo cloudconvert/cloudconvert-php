@@ -1,0 +1,9 @@
+{
+  "message": "The given data was invalid.",
+  "code": "INVALID_DATA",
+  "errors": {
+    "status": [
+      "Cannot change status: task already completed."
+    ]
+  }
+}
