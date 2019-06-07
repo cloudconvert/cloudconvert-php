@@ -44,7 +44,8 @@ use \CloudConvert\Models\Task;
 
 
 $cloudconvert = new CloudConvert([
-    'api_key' => 'API_KEY'
+    'api_key' => 'API_KEY',
+    'sandbox' => false
 ]);
 
 
@@ -95,7 +96,7 @@ The `upload()` method accepts a string, PHP resource or PSR-7 `StreamInterface` 
 
 You can also directly allow clients to upload files to CloudConvert:
 
-```php
+```html
 <form action="<?=$uploadTask->getResult()->form->url?>"
       method="POST"
       enctype="multipart/form-data">
@@ -116,7 +117,8 @@ Webhooks can be created on the [CloudConvert Dashboard](https://cloudconvert.com
 
 ```php
 $cloudconvert = new CloudConvert([
-    'api_key' => 'API_KEY'
+    'api_key' => 'API_KEY',
+    'sandbox' => false
 ]);
 
 $signingSecret = '...'; // You can find it in your webhook settings
@@ -137,6 +139,7 @@ try {
 }
 
 $job = $webhookEvent->getJob();
+
 $exportTask = $job->getTasks()
             ->status(Task::STATUS_FINISHED)
             ->name('export-it')[0]);
@@ -160,7 +163,7 @@ $job = $webhookEvent->getJob();
 
 $exportTask = $job->getTasks()
             ->status(Task::STATUS_FINISHED)
-            ->name('export-it')[0]);
+            ->name('export-it')[0];
             
 foreach ($exportTask->getResult()->files as $file) {
 
