@@ -18,7 +18,7 @@ in your project. To install it please see the [docs](https://getcomposer.org/dow
  
 
 ```bash
-composer require cloudconvert/cloudconvert-php:dev-v3
+composer require cloudconvert/cloudconvert-php:v3.x-dev
 ```
 
 This package (`cloudconvert/cloudconvert-php`) is not tied to any specific library that sends HTTP messages. Instead,
@@ -28,11 +28,11 @@ PSR-7 implementation and HTTP client they want to use.
 If you just want to get started quickly you should run the following command:
 
 ```bash
-composer require cloudconvert/cloudconvert-php:dev-v3 php-http/curl-client guzzlehttp/psr7
+composer require cloudconvert/cloudconvert-php:v3.x-dev php-http/guzzle6-adapter guzzlehttp/psr7
 ```
 
 This will install the library itself along with an HTTP client adapter that uses
-CURL as transport method (provided by Httplug) and a PSR-7 implementation
+Guzzle as transport method (provided by Httplug) and a PSR-7 implementation
 (provided by Guzzle). 
 
 Creating Jobs
