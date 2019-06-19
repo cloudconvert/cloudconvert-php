@@ -149,7 +149,7 @@ $exportTask = $job->getTasks()
 
 Alternatively, you can construct a `WebhookEvent` using a PSR-7 `RequestInterface`:
 ```php
-$webhookEvent = $cloudconvert->webhookHandler()->constructEventByRequest($request, $signingSecret);
+$webhookEvent = $cloudconvert->webhookHandler()->constructEventFromRequest($request, $signingSecret);
 ```
 
 
