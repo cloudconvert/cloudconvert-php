@@ -7,7 +7,6 @@ namespace CloudConvert\Transport;
 use CloudConvert\Exceptions\HttpClientException;
 use CloudConvert\Exceptions\HttpServerException;
 use Http\Client\Common\Plugin\AuthenticationPlugin;
-use Http\Client\Common\Plugin\BaseUriPlugin;
 use Http\Client\Common\Plugin\HeaderDefaultsPlugin;
 use Http\Client\Common\PluginClient;
 use Http\Client\HttpClient;
