@@ -18,6 +18,7 @@ class JobTest extends TestCase
     {
 
         $job = (new Job())
+            ->setTag('integration-test-create-job')
             ->addTask(
                 (new Task('import/url', 'import-it'))
                     ->set('url', 'http://invalid.url')
@@ -32,6 +33,7 @@ class JobTest extends TestCase
         $this->cloudConvert->jobs()->create($job);
 
         $this->assertNotNull($job->getId());
+        $this->assertEquals('integration-test-create-job', $job->getTag());
         $this->assertNotNull($job->getCreatedAt());
         $this->assertCount(2, $job->getTasks());
 
@@ -62,6 +64,7 @@ class JobTest extends TestCase
     {
 
         $job = (new Job())
+            ->setTag('integration-test-upload-download')
             ->addTask(
                 new Task('import/upload', 'import-it')
             )

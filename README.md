@@ -50,6 +50,7 @@ $cloudconvert = new CloudConvert([
 
 
 $job = (new Job())
+    ->setTag('myjob-1')
     ->addTask(
         (new Task('import/url', 'import-my-file'))
             ->set('url','https://my-url')
@@ -140,9 +141,11 @@ try {
 
 $job = $webhookEvent->getJob();
 
+$job->getTag(); // can be used to store an ID
+
 $exportTask = $job->getTasks()
-            ->status(Task::STATUS_FINISHED)
-            ->name('export-it')[0]);
+            ->status(Task::STATUS_FINISHED) // get the task with 'finished' status ...
+            ->name('export-it')[0]);        // ... and with the name 'export-it'
 // ...
 
 ```

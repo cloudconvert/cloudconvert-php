@@ -55,7 +55,8 @@ class JobsResource extends AbstractResource
             );
         }
         $response = $this->httpTransport->post($this->httpTransport->getBaseUri() . '/jobs', [
-            'tasks' => $tasks
+            'tasks' => $tasks,
+            'tag' => $job->getTag()
         ]);
         return $this->hydrator->hydrateObjectByResponse($job, $response);
     }

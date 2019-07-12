@@ -36,6 +36,7 @@ class JobResourceTest extends TestCase
 
         $this->assertInstanceOf(Job::class, $job);
         $this->assertEquals('cd82535b-0614-4b23-bbba-b24ab0e892f7', $job->getId());
+        $this->assertEquals('test-1234', $job->getTag());
         $this->assertEquals(Job::STATUS_ERROR, $job->getStatus());
         $this->assertInstanceOf(\DateTimeImmutable::class, $job->getCreatedAt());
         $this->assertInstanceOf(\DateTimeImmutable::class, $job->getEndedAt());

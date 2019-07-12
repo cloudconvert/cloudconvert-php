@@ -18,6 +18,11 @@ class Job
     protected $id;
 
     /**
+     * @var string|null
+     */
+    protected $tag;
+
+    /**
      * @var \DateTimeImmutable
      */
     protected $created_at;
@@ -55,6 +60,24 @@ class Job
         return $this->id;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getTag(): ?string
+    {
+        return $this->tag;
+    }
+
+    /**
+     * @param string|null $tag
+     *
+     * @return Job
+     */
+    public function setTag(?string $tag): Job
+    {
+        $this->tag = $tag;
+        return $this;
+    }
 
     /**
      * @return \DateTimeImmutable
@@ -116,7 +139,7 @@ class Job
      */
     public function addTask(Task $task): Job
     {
-        if(!$this->tasks) {
+        if (!$this->tasks) {
             $this->tasks = new TaskCollection();
         }
         $this->tasks[] = $task;
