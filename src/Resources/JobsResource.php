@@ -19,10 +19,7 @@ class JobsResource extends AbstractResource
      */
     public function get(string $id, $query = null): Job
     {
-        if($query === null) {
-            $query = ['include' => 'tasks'];
-        }
-        $response = $this->httpTransport->get($this->httpTransport->getBaseUri() . '/jobs/' . $id, $query);
+        $response = $this->httpTransport->get($this->httpTransport->getBaseUri() . '/jobs/' . $id, $query ?? []);
         return $this->hydrator->createObjectByResponse(Job::class, $response);
 
 
