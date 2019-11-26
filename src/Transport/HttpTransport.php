@@ -6,7 +6,6 @@ namespace CloudConvert\Transport;
 
 use CloudConvert\Exceptions\HttpClientException;
 use CloudConvert\Exceptions\HttpServerException;
-use Http\Client\Common\Plugin\AuthenticationPlugin;
 use Http\Client\Common\Plugin\HeaderDefaultsPlugin;
 use Http\Client\Common\PluginClient;
 use Http\Client\HttpClient;
@@ -14,7 +13,6 @@ use Http\Discovery\HttpClientDiscovery;
 use Http\Discovery\MessageFactoryDiscovery;
 use Http\Discovery\StreamFactoryDiscovery;
 use Http\Discovery\UriFactoryDiscovery;
-use Http\Message\Authentication\Bearer;
 use Http\Message\MessageFactory;
 use Http\Message\MultipartStream\MultipartStreamBuilder;
 use Http\Message\StreamFactory;
@@ -54,7 +52,6 @@ class HttpTransport
 
         $httpClient = $this->options['http_client'] ?? HttpClientDiscovery::find();
         $httpClientPlugins = [
-            new AuthenticationPlugin(new Bearer($this->options['api_key'])),
             new HeaderDefaultsPlugin([
                 'User-Agent' => 'cloudconvert-php/v3 (https://github.com/cloudconvert/cloudconvert-php)',
             ]),
@@ -131,9 +128,8 @@ class HttpTransport
      */
     public function download(string $url)
     {
-        return $this->sendRequest($this->getMessageFactory()->createRequest('GET', $url))->getBody();
+        return $this->sendRequest($this->getMessageFactory()->createRequest('GET', $url), false)->getBody();
     }
-
 
 
     /**
@@ -201,19 +197,24 @@ class HttpTransport
             $multipartStream
         );
 
-        return $this->sendRequest($request);
+        return $this->sendRequest($request, false);
     }
 
     /**
      * @param RequestInterface $request
      *
+     * @param bool             $authenticate
+     *
      * @return ResponseInterface
-     * @throws \CloudConvert\Exceptions\Exception
+     * @throws \Exception
      */
-    protected function sendRequest(RequestInterface $request)
+    protected function sendRequest(RequestInterface $request, $authenticate = true)
     {
 
         try {
+            if ($authenticate) {
+                $request = $request->withHeader('Authorization', 'Bearer ' . $this->options['api_key']);
+            }
             $response = $this->getHttpClient()->sendRequest($request);
         } catch (\Http\Client\Exception $exception) {
             throw HttpServerException::networkError($exception);

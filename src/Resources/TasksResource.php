@@ -73,6 +73,17 @@ class TasksResource extends AbstractResource
 
     /**
      * @param Task $task
+     *
+     * @return Task
+     */
+    public function wait(Task $task): Task
+    {
+        $response = $this->httpTransport->get($this->httpTransport->getBaseUri() . '/tasks/' . $task->getId() . '/wait');
+        return $this->hydrator->hydrateObjectByResponse($task, $response);
+    }
+
+    /**
+     * @param Task $task
      */
     public function delete(Task $task): void
     {

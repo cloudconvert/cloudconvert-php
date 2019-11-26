@@ -40,22 +40,11 @@ class JobTest extends TestCase
         $task1 = $job->getTasks()[0];
         $task2 = $job->getTasks()[1];
 
-        $this->assertEquals('import/url', $task1->getOperation());
-        $this->assertEquals('import-it', $task1->getName());
-        $this->assertEquals([
-            'operation' => 'import/url',
-            'url'       => 'http://invalid.url',
-            'filename'  => 'test.file'
-        ], (array)$task1->getPayload());
+        $this->assertEquals('convert', $task1->getOperation());
+        $this->assertEquals('convert-it', $task1->getName());
 
-        $this->assertEquals('convert', $task2->getOperation());
-        $this->assertEquals('convert-it', $task2->getName());
-        $this->assertEquals([
-            'operation'     => 'convert',
-            'input'         => ['import-it'],
-            'output_format' => 'pdf',
-        ], (array)$task2->getPayload());
-
+        $this->assertEquals('import/url', $task2->getOperation());
+        $this->assertEquals('import-it', $task2->getName());
 
     }
 
@@ -79,10 +68,8 @@ class JobTest extends TestCase
 
         $this->cloudConvert->tasks()->upload($uploadTask, fopen(__DIR__ . '/files/input.pdf', 'r'));
 
-        while ($job->getStatus() !== Job::STATUS_FINISHED) {
-            sleep(1);
-            $this->cloudConvert->jobs()->refresh($job);
-        }
+        $this->cloudConvert->jobs()->wait($job);
+        $this->assertEquals(Job::STATUS_FINISHED, $job->getStatus());
 
         $exportTask = $job->getTasks()->status(Task::STATUS_FINISHED)->name('export-it')[0];
 

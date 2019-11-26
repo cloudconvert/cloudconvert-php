@@ -110,6 +110,33 @@ You can also directly allow clients to upload files to CloudConvert:
 ```
 
 
+Downloading Files
+-------------------
+
+CloudConvert can generate public URLs for using `export/url` tasks. You can use the PHP SDK to download the output files when the Job is finished.
+
+```php
+$cloudconvert->jobs()->wait($job); // Wait for job completion
+
+$exportTasks = $job->getTasks()
+            ->status(Task::STATUS_FINISHED)
+            ->name('export-it');
+
+foreach ($exportTasks as $eportTask) {            
+    foreach ($exportTask->getResult()->files as $file) {
+
+        $source = $cloudConvert->getHttpTransport()->download($file->url)->detach();
+        $dest = fopen('output/' . $file->filename, 'w');
+    
+        stream_copy_to_stream($source, $dest);
+
+    }
+}
+```
+
+The `download()` method returns a PSR-7 `StreamInterface`, which can be used as a PHP resource using `detach()`.
+
+
 
 Webhooks
 -------------------
@@ -154,33 +181,6 @@ Alternatively, you can construct a `WebhookEvent` using a PSR-7 `RequestInterfac
 ```php
 $webhookEvent = $cloudconvert->webhookHandler()->constructEventFromRequest($request, $signingSecret);
 ```
-
-
-Downloading Files
--------------------
-
-CloudConvert can generate public URLs for using `export/url` tasks. You can use the PHP SDK to download the output files when the Job is finished (for example in your webhook endpoint).
-
-```php
-$job = $webhookEvent->getJob();
-
-$exportTasks = $job->getTasks()
-            ->status(Task::STATUS_FINISHED)
-            ->name('export-it');
-
-foreach ($exportTasks as $eportTask) {            
-    foreach ($exportTask->getResult()->files as $file) {
-
-        $source = $cloudConvert->getHttpTransport()->download($file->url)->detach();
-        $dest = fopen('output/' . $file->filename, 'w');
-    
-        stream_copy_to_stream($source, $dest);
-
-    }
-}
-```
-
-The `download()` method returns a PSR-7 `StreamInterface`, which can be used as a PHP resource using `detach()`.
 
 
 Unit Tests

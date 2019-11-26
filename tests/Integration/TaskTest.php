@@ -24,7 +24,6 @@ class TaskTest extends TestCase
         $this->assertNotNull($task->getCreatedAt());
         $this->assertEquals('import/url', $task->getOperation());
         $this->assertEquals([
-            'name'     => 'url-test',
             'url'      => 'http://invalid.url',
             'filename' => 'test.file'
         ], (array)$task->getPayload());
@@ -45,10 +44,8 @@ class TaskTest extends TestCase
 
         $this->assertEquals(201, $response->getStatusCode());
 
-        while ($task->getStatus() !== Task::STATUS_FINISHED) {
-            sleep(1);
-            $this->cloudConvert->tasks()->refresh($task);
-        }
+        $this->cloudConvert->tasks()->wait($task);
+        $this->assertEquals(Task::STATUS_FINISHED, $task->getStatus());
 
         $this->assertEquals('input.pdf', $task->getResult()->files[0]->filename);
 

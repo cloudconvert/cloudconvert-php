@@ -11,9 +11,9 @@ class JobsResource extends AbstractResource
 {
 
     /**
-     * @param string $id
+     * @param string     $id
      *
-     * @param array|null   $query
+     * @param array|null $query
      *
      * @return Job
      */
@@ -26,7 +26,7 @@ class JobsResource extends AbstractResource
     }
 
     /**
-     * @param array|null   $query
+     * @param array|null $query
      *
      * @return JobCollection
      */
@@ -53,28 +53,35 @@ class JobsResource extends AbstractResource
         }
         $response = $this->httpTransport->post($this->httpTransport->getBaseUri() . '/jobs', [
             'tasks' => $tasks,
-            'tag' => $job->getTag()
+            'tag'   => $job->getTag()
         ]);
         return $this->hydrator->hydrateObjectByResponse($job, $response);
     }
 
 
     /**
-     * @param Job   $job
+     * @param Job        $job
      *
-     * @param array|null   $query
+     * @param array|null $query
      *
      * @return Job
      */
     public function refresh(Job $job, $query = null): Job
     {
-        if($query === null) {
-            $query = ['include' => 'tasks'];
-        }
         $response = $this->httpTransport->get($this->httpTransport->getBaseUri() . '/jobs/' . $job->getId(), $query);
         return $this->hydrator->hydrateObjectByResponse($job, $response);
     }
 
+    /**
+     * @param Job $job
+     *
+     * @return Job
+     */
+    public function wait(Job $job): Job
+    {
+        $response = $this->httpTransport->get($this->httpTransport->getBaseUri() . '/jobs/' . $job->getId() . '/wait');
+        return $this->hydrator->hydrateObjectByResponse($job, $response);
+    }
 
     /**
      * @param Job $job
