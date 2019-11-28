@@ -118,19 +118,13 @@ CloudConvert can generate public URLs for using `export/url` tasks. You can use 
 ```php
 $cloudconvert->jobs()->wait($job); // Wait for job completion
 
-$exportTasks = $job->getTasks()
-            ->status(Task::STATUS_FINISHED)
-            ->name('export-it');
+foreach ($job->getExportUrls() as $file) {
 
-foreach ($exportTasks as $eportTask) {            
-    foreach ($exportTask->getResult()->files as $file) {
-
-        $source = $cloudConvert->getHttpTransport()->download($file->url)->detach();
-        $dest = fopen('output/' . $file->filename, 'w');
+    $source = $cloudconvert->getHttpTransport()->download($file->url)->detach();
+    $dest = fopen('output/' . $file->filename, 'w');
     
-        stream_copy_to_stream($source, $dest);
+    stream_copy_to_stream($source, $dest);
 
-    }
 }
 ```
 

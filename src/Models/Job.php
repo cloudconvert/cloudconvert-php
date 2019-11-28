@@ -147,4 +147,19 @@ class Job
     }
 
 
+    /*
+     * return array
+     */
+    public function getExportUrls()
+    {
+        $files = [];
+        foreach ($this->getTasks()
+                     ->status(Task::STATUS_FINISHED)
+                     ->operation('export/url') as $exportTask) {
+            $files = array_merge($files, $exportTask->getResult()->files ?? []);
+        }
+        return $files;
+    }
+
+
 }

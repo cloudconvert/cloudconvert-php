@@ -139,4 +139,34 @@ class JobResourceTest extends TestCase
     }
 
 
+    public function testGetExportUrls()
+    {
+
+
+        $response = new Response(200, [
+            'Content-Type' => 'application/json'
+        ], file_get_contents(__DIR__ . '/responses/job_export_urls.json'));
+
+
+        $this->getMockClient()->on(new RequestMatcher('/v2/jobs/cd82535b-0614-4b23-bbba-b24ab0e892f7', null, 'GET'),
+            $response);
+
+
+        $job = $this->cloudConvert->jobs()->get('cd82535b-0614-4b23-bbba-b24ab0e892f7');
+
+        $this->assertInstanceOf(Job::class, $job);
+
+        $urls = $job->getExportUrls();
+
+
+        $this->assertCount(2, $urls);
+
+        $this->assertEquals('file.mp4', $urls[0]->filename);
+        $this->assertEquals('https://storage.cloudconvert.com/file.mp4', $urls[0]->url);
+
+        $this->assertEquals('file2.mp4', $urls[1]->filename);
+
+    }
+
+
 }

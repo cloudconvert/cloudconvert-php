@@ -75,7 +75,7 @@ class JobTest extends TestCase
 
         $this->assertNotNull($exportTask->getResult());
 
-        $file = $exportTask->getResult()->files[0];
+        $file = $job->getExportUrls()[0];
 
         $this->assertNotEmpty($file->url);
 
