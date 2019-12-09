@@ -1,7 +1,7 @@
 cloudconvert-php
 =======================
 
-> This is the official PHP SDK v3 (Beta) for the [CloudConvert](https://cloudconvert.com/api/v2) _API v2_. 
+> This is the official PHP SDK v3 for the [CloudConvert](https://cloudconvert.com/api/v2) _API v2_. 
 > For API v1, please use [v2 branch](https://github.com/cloudconvert/cloudconvert-php/tree/v2) of this repository.
 
 [![Build Status](https://travis-ci.org/cloudconvert/cloudconvert-php.svg?branch=v3)](https://travis-ci.org/cloudconvert/cloudconvert-php)
@@ -18,7 +18,7 @@ in your project. To install it please see the [docs](https://getcomposer.org/dow
  
 
 ```bash
-composer require cloudconvert/cloudconvert-php:v3.x-dev
+composer require cloudconvert/cloudconvert-php
 ```
 
 This package (`cloudconvert/cloudconvert-php`) is not tied to any specific library that sends HTTP messages. Instead,
@@ -28,7 +28,7 @@ PSR-7 implementation and HTTP client they want to use.
 If you just want to get started quickly you should run the following command:
 
 ```bash
-composer require cloudconvert/cloudconvert-php:v3.x-dev php-http/guzzle6-adapter guzzlehttp/psr7
+composer require cloudconvert/cloudconvert-php php-http/guzzle6-adapter guzzlehttp/psr7
 ```
 
 This will install the library itself along with an HTTP client adapter that uses
