@@ -1,262 +1,200 @@
 cloudconvert-php
 =======================
 
-> This is the official PHP SDK v2 or the [CloudConvert](https://cloudconvert.com/api/v1) _API v1_. 
-> For API v2, please use [v3 branch](https://github.com/cloudconvert/cloudconvert-php/tree/v3) (Beta) of this repository.
+> This is the official PHP SDK v3 (Beta) for the [CloudConvert](https://cloudconvert.com/api/v2) _API v2_. 
+> For API v1, please use [v2 branch](https://github.com/cloudconvert/cloudconvert-php/tree/v2) of this repository.
 
-[![Build Status](https://travis-ci.org/cloudconvert/cloudconvert-php.svg?branch=master)](https://travis-ci.org/cloudconvert/cloudconvert-php)
+[![Build Status](https://travis-ci.org/cloudconvert/cloudconvert-php.svg?branch=v3)](https://travis-ci.org/cloudconvert/cloudconvert-php)
 [![Latest Stable Version](https://poser.pugx.org/cloudconvert/cloudconvert-php/v/stable)](https://packagist.org/packages/cloudconvert/cloudconvert-php)
 [![Total Downloads](https://poser.pugx.org/cloudconvert/cloudconvert-php/downloads)](https://packagist.org/packages/cloudconvert/cloudconvert-php)
 [![License](https://poser.pugx.org/cloudconvert/cloudconvert-php/license)](https://packagist.org/packages/cloudconvert/cloudconvert-php)
 
 
-Quickstart
+Install
 -------------------
-```php
-<?php
-require __DIR__ . '/vendor/autoload.php';
-use \CloudConvert\Api;
-$api = new Api("your_api_key");
 
-$api->convert([
-        'inputformat' => 'png',
-        'outputformat' => 'pdf',
-        'input' => 'upload',
-        'file' => fopen('./tests/input.png', 'r'),
-    ])
-    ->wait()
-    ->download('./tests/output.pdf');
-?>
+To install the PHP SDK you will need to be using [Composer]([https://getcomposer.org/)
+in your project. To install it please see the [docs](https://getcomposer.org/download/).
+ 
+
+```bash
+composer require cloudconvert/cloudconvert-php:v3.x-dev
 ```
 
-You can use the [CloudConvert API Console](https://cloudconvert.com/apiconsole) to generate ready-to-use PHP code snippets using this wrapper.
+This package (`cloudconvert/cloudconvert-php`) is not tied to any specific library that sends HTTP messages. Instead,
+it uses [Httplug](https://github.com/php-http/httplug) to let users choose whichever
+PSR-7 implementation and HTTP client they want to use.
 
+If you just want to get started quickly you should run the following command:
 
-Install with Composer
--------------------
-To download this wrapper and integrate it inside your PHP application, you can use [Composer](https://getcomposer.org).
-
-Add the repository in your **composer.json** file or, if you don't already have this file, create it at the root of your project with this content:
-
-```json
-{
-    "name": "Example Application",
-    "description": "This is an example",
-    "require": {
-        "cloudconvert/cloudconvert-php": "2.2.*"
-    }
-}
-
+```bash
+composer require cloudconvert/cloudconvert-php:v3.x-dev php-http/guzzle6-adapter guzzlehttp/psr7
 ```
 
-Then, you can install CloudConvert APIs wrapper and dependencies with:
+This will install the library itself along with an HTTP client adapter that uses
+Guzzle as transport method (provided by Httplug) and a PSR-7 implementation
+(provided by Guzzle). 
 
-    php composer.phar install
-
-This will install ``cloudconvert/cloudconvert-php`` to ``./vendor``, along with other dependencies including ``autoload.php``.
-
-Install manually
+Creating Jobs
 -------------------
-If you don't want to use composer, you can download the **cloudconvert-php.phar** release from the [Releases](https://github.com/cloudconvert/cloudconvert-php/releases) tab on GitHub. The .phar file is basically a ZIP file which contains all dependencies and can be used as shown here:
-
 ```php
-<?php
-require 'phar://cloudconvert-php.phar/vendor/autoload.php';
-use \CloudConvert\Api;
-$api = new Api("your_api_key");
+use \CloudConvert\CloudConvert;
+use \CloudConvert\Models\Job;
+use \CloudConvert\Models\Task;
 
-//...
-```
 
-Using with Callback
--------------------
-
-This is a non-blocking example for server side conversions: The public URL of the input file and a callback URL is sent to CloudConvert. CloudConvert will trigger this callback URL if the conversion is finished.
-
-```php
-<?php
-require __DIR__ . '/vendor/autoload.php';
-use \CloudConvert\Api;
-$api = new Api("your_api_key");
-
-$process = $api->createProcess([
-    'inputformat' => 'png',
-    'outputformat' => 'jpg',
+$cloudconvert = new CloudConvert([
+    'api_key' => 'API_KEY',
+    'sandbox' => false
 ]);
 
-$process->start([
-    'outputformat' => 'jpg',
-    'converteroptions' => [
-        'quality' => 75,
-    ],
-    'input' => 'download',
-    'file' => 'https://cloudconvert.com/blog/wp-content/themes/cloudconvert/img/logo_96x60.png',
-    'callback' => 'http://_INSERT_PUBLIC_URL_TO_/callback.php'
-]);
 
-echo "Conversion was started in background :-)";
-?>
+$job = (new Job())
+    ->setTag('myjob-1')
+    ->addTask(
+        (new Task('import/url', 'import-my-file'))
+            ->set('url','https://my-url')
+    )
+    ->addTask(
+        (new Task('convert', 'convert-my-file'))
+            ->set('input', 'import-my-file')
+            ->set('output_format', 'pdf')
+            ->set('some_other_option', 'value')
+    )
+    ->addTask(
+        (new Task('export/url', 'export-my-file'))
+            ->set('input', 'convert-my-file')
+    );
+
+$cloudconvert->jobs()->create($job)
+
 ```
 
-Using the following **callback.php** you can retrieve the finished process and download the output file.
-
-```php
-<?php
-require __DIR__ . '/vendor/autoload.php';
-use \CloudConvert\Api;
-use \CloudConvert\Process;
-$api = new Api("your_api_key");
-
-$process = new Process($api, $_REQUEST['url']);
-$process->refresh()->download("output.jpg");
-
-?>
-```
+You can use the [CloudConvert Job Builder](https://cloudconvert.com/api/v2/jobs/builder) to see the available options for the various task types.
 
 
-
-User uploaded input files
+Uploading Files
 -------------------
-
-If your input files are provided by your users, you can let your users directly upload their files to CloudConvert (instead of uploading them to your server first and afterwards sending them to CloudConvert).
-The following example shows how this can be implemented easily.
+Uploads to CloudConvert are done via `import/upload` tasks (see the [docs](https://cloudconvert.com/api/v2/import#import-upload-tasks)). This SDK offers a convenient upload method:
 
 ```php
-<?php
-require __DIR__ . '/vendor/autoload.php';
-use \CloudConvert\Api;
-$api = new Api("your_api_key");
+use \CloudConvert\Models\Job;
+use \CloudConvert\Models\ImportUploadTask;
 
-$process = $api->createProcess([
-    'inputformat' => 'png',
-    'outputformat' => 'jpg',
-]);
 
-$process->start([
-    'input' => 'upload',
-    'outputformat' => 'jpg',
-    'converteroptions' => [
-        'quality' => 75,
-    ],
-    'callback' => 'http://_INSERT_PUBLIC_URL_TO_/callback.php'
-]);
-?>
-<form action="<?=$process->upload->url?>" method="POST" enctype="multipart/form-data">
-     <input type="file" name="file">
-     <input type="submit">
+$job = (new Job())
+    ->addTask(new Task('import/upload','upload-my-file'));
+//  ->addTask(...);
+
+$cloudconvert->jobs()->create($job);
+
+$uploadTask = $job->getTasks()->name('upload-my-file')[0];
+
+$cloudconvert->tasks()->upload($uploadTask, fopen('./file.pdf', 'r'));
+
+```
+The `upload()` method accepts a string, PHP resource or PSR-7 `StreamInterface` as second parameter.
+
+You can also directly allow clients to upload files to CloudConvert:
+
+```html
+<form action="<?=$uploadTask->getResult()->form->url?>"
+      method="POST"
+      enctype="multipart/form-data">
+    <? foreach ((array)$uploadTask->getResult()->form->parameters as $parameter => $value) { ?>
+        <input type="hidden" name="<?=$parameter?>" value="<?=$value?>">
+    <? } ?>
+    <input type="file" name="file">
+    <input type="submit">
 </form>
-
 ```
 
 
-Download of multiple output files
+Downloading Files
 -------------------
 
-In some cases it might be possible that there are multiple output files (e.g. converting a multi-page PDF to JPG). You can download them all to one directory using the ``downloadAll()`` method.
+CloudConvert can generate public URLs for using `export/url` tasks. You can use the PHP SDK to download the output files when the Job is finished.
 
 ```php
-<?php
-require __DIR__ . '/vendor/autoload.php';
-use \CloudConvert\Api;
-$api = new Api("your_api_key");
+$cloudconvert->jobs()->wait($job); // Wait for job completion
 
-$process = $api->convert([
-        'inputformat' => 'pdf',
-        'outputformat' => 'jpg',
-        'converteroptions' => [
-            'page_range' => '1-3',
-        ],
-        'input' => 'download',
-        'file' => fopen('./tests/input.pdf', 'r'),
-    ])
-    ->wait()
-    ->downloadAll('./tests/');
-?>
+foreach ($job->getExportUrls() as $file) {
+
+    $source = $cloudconvert->getHttpTransport()->download($file->url)->detach();
+    $dest = fopen('output/' . $file->filename, 'w');
+    
+    stream_copy_to_stream($source, $dest);
+
+}
 ```
 
-Alternatively you can iterate over ``$process->output->files`` and download them seperately using ``$process->download($localfile, $remotefile)``.
+The `download()` method returns a PSR-7 `StreamInterface`, which can be used as a PHP resource using `detach()`.
 
 
-Catching Exceptions
+
+Webhooks
 -------------------
-The following example shows how to catch the different exception types which can occur at conversions:
+
+Webhooks can be created on the [CloudConvert Dashboard](https://cloudconvert.com/dashboard/api/v2/webhooks) and you can also find the required signing secret there.
 
 ```php
-<?php
-require __DIR__ . '/vendor/autoload.php';
-use \CloudConvert\Api;
+$cloudconvert = new CloudConvert([
+    'api_key' => 'API_KEY',
+    'sandbox' => false
+]);
 
-$api = new Api("your_api_key");
+$signingSecret = '...'; // You can find it in your webhook settings
+
+$payload = @file_get_contents('php://input');
+$signature = $_SERVER['HTTP_CLOUDCONVERT_SIGNATURE'];
 
 try {
-
-    $api->convert([
-        'inputformat' => 'pdf',
-        'outputformat' => 'jpg',
-        'input' => 'upload',
-        'file' => fopen('./tests/input.pdf', 'r'),
-    ])
-        ->wait()
-        ->downloadAll('./tests/');
-
-} catch (\CloudConvert\Exceptions\ApiBadRequestException $e) {
-    echo "Something with your request is wrong: " . $e->getMessage();
-} catch (\CloudConvert\Exceptions\ApiConversionFailedException $e) {
-    echo "Conversion failed, maybe because of a broken input file: " . $e->getMessage();
-}  catch (\CloudConvert\Exceptions\ApiTemporaryUnavailableException $e) {
-    echo "API temporary unavailable: " . $e->getMessage() ."\n";
-    echo "We should retry the conversion in " . $e->retryAfter . " seconds";
-} catch (Exception $e) {
-    // network problems, etc..
-    echo "Something else went wrong: " . $e->getMessage() . "\n";
+    $webhookEvent = $cloudconvert->webhookHandler()->constructEvent($payload, $signature, $signingSecret);
+} catch(\CloudConvert\Exceptions\UnexpectedDataException $e) {
+    // Invalid payload
+    http_response_code(400);
+    exit();
+} catch(\CloudConvert\Exceptions\SignatureVerificationException $e) {
+    // Invalid signature
+    http_response_code(400);
+    exit();
 }
+
+$job = $webhookEvent->getJob();
+
+$job->getTag(); // can be used to store an ID
+
+$exportTask = $job->getTasks()
+            ->status(Task::STATUS_FINISHED) // get the task with 'finished' status ...
+            ->name('export-it')[0]);        // ... and with the name 'export-it'
+// ...
+
+```
+
+Alternatively, you can construct a `WebhookEvent` using a PSR-7 `RequestInterface`:
+```php
+$webhookEvent = $cloudconvert->webhookHandler()->constructEventFromRequest($request, $signingSecret);
 ```
 
 
-
-How to build the documentation?
--------------------------------
-
-Documentation is based on phpdocumentor. To install it with other quality tools,
-you can install local npm project in a clone a project
-
-    git clone https://github.com/cloudconvert/cloudconvert-php.git
-    cd cloudconvert-php
-    php composer.phar install
-    npm install
-
-To generate documentation, it's possible to use directly:
-
-    grunt phpdocs
-
-Documentation is available in docs/ directory.
-
-How to run tests?
+Unit Tests
 -----------------
 
-Tests are based on phpunit. To install it with other quality tools, you can install
-local npm project in a clone a project
-
-    git https://github.com/cloudconvert/cloudconvert-php.git
-    cd cloudconvert-php
-    php composer.phar install
-    npm install
-
-Then, you can run directly run the unit tests with grunt.
-
-    grunt
+    vendor/bin/phpunit --testsuite unit
 
 
-How to run integration tests?
+Integration Tests
 -----------------
 
-By default, grunt does not run integration tests against the real CloudConvert API. To run integration tests, edit **phpunit.xml** file with your API Key. Then:
+    vendor/bin/phpunit --testsuite integration
 
-    grunt phpunit:integration
+By default, this runs the integration tests against the Sandbox API with an official CloudConvert account. If you would like to use your own account, you can set your API key using the `CLOUDCONVERT_API_KEY` enviroment variable. In this case you need to whitelist the following MD5 hashes for Sandbox API (using the CloudConvert dashboard).
+
+    53d6fe6b688c31c565907c81de625046  input.pdf
+    99d4c165f77af02015aa647770286cf9  input.png
 
 Resources
 ---------
 
-* [API Documentation](https://cloudconvert.com/api/v1)
-* [Conversion Types](https://cloudconvert.com/formats)
+* [API Documentation](https://cloudconvert.com/api/v2)
 * [CloudConvert Blog](https://cloudconvert.com/blog)

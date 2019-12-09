@@ -1,0 +1,74 @@
+{
+  "data": {
+    "id": "c677ccf7-8876-4f48-bb96-0ab8e0d88cd7",
+    "status": "waiting",
+    "created_at": "2019-06-01T00:35:33+00:00",
+    "started_at": "2019-06-01T00:35:33+00:00",
+    "ended_at": null,
+    "tasks": [
+      {
+        "id": "22b3d686-126b-4fe2-8238-a9781cd023d9",
+        "name": "import-it",
+        "job_id": "c677ccf7-8876-4f48-bb96-0ab8e0d88cd7",
+        "status": "waiting",
+        "code": null,
+        "message": null,
+        "percent": 100,
+        "operation": "import\/url",
+        "payload": {
+          "operation": "import\/url",
+          "url": "http:\/\/invalid.url",
+          "filename": "test.file"
+        },
+        "result": null,
+        "created_at": "2019-06-01T00:35:33+00:00",
+        "started_at": "2019-06-01T00:35:33+00:00",
+        "ended_at": null,
+        "retry_of_task_id": null,
+        "copy_of_task_id": null,
+        "host_name": "jena",
+        "storage": null,
+        "depends_on_task_ids": [],
+        "links": {
+          "self": "https:\/\/api.cloudconvert.com\/v2\/tasks\/22b3d686-126b-4fe2-8238-a9781cd023d9"
+        }
+      },
+      {
+        "id": "15281118-acc3-441f-970d-39a49457d9e5",
+        "name": "convert-it",
+        "job_id": "c677ccf7-8876-4f48-bb96-0ab8e0d88cd7",
+        "status": "waiting",
+        "code": null,
+        "message": null,
+        "percent": 100,
+        "operation": "convert",
+        "engine": null,
+        "engine_version": null,
+        "payload": {
+          "operation": "convert",
+          "input": [
+            "import-it"
+          ],
+          "output_format": "pdf"
+        },
+        "result": null,
+        "created_at": "2019-06-01T00:35:33+00:00",
+        "started_at": null,
+        "ended_at": null,
+        "retry_of_task_id": null,
+        "copy_of_task_id": null,
+        "host_name": null,
+        "storage": null,
+        "depends_on_task_ids": [
+          "22b3d686-126b-4fe2-8238-a9781cd023d9"
+        ],
+        "links": {
+          "self": "https:\/\/api.cloudconvert.com\/v2\/tasks\/15281118-acc3-441f-970d-39a49457d9e5"
+        }
+      }
+    ],
+    "links": {
+      "self": "https:\/\/api.cloudconvert.com\/v2\/jobs\/c677ccf7-8876-4f48-bb96-0ab8e0d88cd7"
+    }
+  }
+}

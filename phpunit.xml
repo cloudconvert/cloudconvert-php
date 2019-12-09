@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit colors="true" bootstrap="tests/bootstrap.php">
     <testsuites>
-        <testsuite name="tests">
-            <directory>tests</directory>
-            <exclude>tests/integration</exclude>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
         </testsuite>
         <testsuite name="integration">
             <directory>tests/integration</directory>
         </testsuite>
     </testsuites>
     <php>
-        <env name="API_KEY" value="your_api_key_here"/>
+        <env name="CLOUDCONVERT_API_KEY" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjI4YmE3OGQyZjc1NWM5ZGE3Yjg1NDRhMWRkMjg2NWM4N2U0YzI5NWI0NzQ0Zjc4ZDNmMzA3OWM2NjU3ZjI0MjVhOTMyYjIxMjU5ZGU2NWQ4In0.eyJhdWQiOiIxIiwianRpIjoiMjhiYTc4ZDJmNzU1YzlkYTdiODU0NGExZGQyODY1Yzg3ZTRjMjk1YjQ3NDRmNzhkM2YzMDc5YzY2NTdmMjQyNWE5MzJiMjEyNTlkZTY1ZDgiLCJpYXQiOjE1NTkwNjc3NzcsIm5iZiI6MTU1OTA2Nzc3NywiZXhwIjo0NzE0NzQxMzc3LCJzdWIiOiIzNzExNjc4NCIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ1c2VyLndyaXRlIiwidGFzay5yZWFkIiwidGFzay53cml0ZSIsIndlYmhvb2sucmVhZCIsIndlYmhvb2sud3JpdGUiXX0.IkmkfDVGwouCH-ICFAShQMHyFAHK3y90CSoissUVD8h5HFG4GqN5DEw0IFzlPr1auUKp3H1pAvPutdIQtrDMTmUUmGMUb2dRlCAuQdqxa81Q5KAmcKDgOg2YTWOWEGMy3jETTb7W6vyNGsT_3DFMapMdeOw1jdIUTMZqW3QbSCeGXj3PMRnhI7YynaDtmktjzO9IUDHbeT2HRzzMiep97KvVZNjYtZvgM-kbUjE6Mm68_kA8JMuQeor0Yg7896JPV0YM3-MnHf7elKgoCJbfBCDAbvSX_ZYsSI7IGoLLb0mgJVfFcH_HMYAHhJj5cUEJN2Iml-FkODqrRk72bVxyJs9j1GPQBl4ORXuU9yrjUgHrRaZ5YM__LwsUQB3AuB92oyQseCjULn1sWM1PzIXCcyVjKZSpn9LAAGNf9paCF-_G9ok9tZKccRouCiYl9v5XbmuxV8hXYp6fXZxyaAkj_JN2kErVSkxYzVyyZL1e220aFFnbch6nDvLFHgi-WeTQHFQDzuHsM8RKRixV8uD7pk3de4AEYg0EWqZHCr82qY7TGdSQvuAS0QIy3B89OwQW0ROW4k3Yw0XIKgKSYWyKnc7huc7yPQUIDDDAOa5OojXrVY5ZuL_hwQMIOmejcHTKFdAgzAaVnRkC8_FfVh4wHCPBaHjze9hRp5n4O1pnPFI"/>
 	</php>
 </phpunit>

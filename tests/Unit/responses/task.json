@@ -1,0 +1,76 @@
+{
+  "data": {
+    "id": "4c80f1ae-5b3a-43d5-bb58-1a5c4eb4e46b",
+    "name": "export-1",
+    "job_id": "cd82535b-0614-4b23-bbba-b24ab0e892f7",
+    "status": "error",
+    "code": "INPUT_TASK_FAILED",
+    "message": "Input task has failed",
+    "percent": 100,
+    "operation": "export\/url",
+    "payload": {
+      "operation": "export\/url",
+      "input": [
+        "task-1"
+      ]
+    },
+    "result": null,
+    "created_at": "2019-05-30T10:53:01+00:00",
+    "started_at": null,
+    "ended_at": "2019-05-30T10:53:23+00:00",
+    "retry_of_task_id": null,
+    "copy_of_task_id": null,
+    "retries": [],
+    "host_name": null,
+    "storage": null,
+    "depends_on_tasks": [
+      {
+        "id": "6df0920a-7042-4e87-be52-f38a0a29a67e",
+        "name": "task-1",
+        "job_id": "cd82535b-0614-4b23-bbba-b24ab0e892f7",
+        "status": "error",
+        "code": "INPUT_TASK_FAILED",
+        "message": "Input task has failed",
+        "percent": 100,
+        "operation": "convert",
+        "engine": null,
+        "engine_version": null,
+        "payload": {
+          "operation": "convert",
+          "input_format": "mp4",
+          "output_format": "mp4",
+          "engine": "ffmpeg",
+          "input": [
+            "import-1"
+          ],
+          "video_codec": "x264",
+          "crf": 0,
+          "preset": "veryslow",
+          "profile": "baseline",
+          "width": 1920,
+          "height": 1080,
+          "audio_codec": "copy",
+          "audio_bitrate": 320,
+          "engine_version": "4.1.1"
+        },
+        "result": null,
+        "created_at": "2019-05-30T10:53:01+00:00",
+        "started_at": null,
+        "ended_at": "2019-05-30T10:53:23+00:00",
+        "retry_of_task_id": null,
+        "copy_of_task_id": null,
+        "host_name": null,
+        "storage": null,
+        "depends_on_task_ids": [
+          "22be63c2-0e3f-4909-9c2a-2261dc540aba"
+        ],
+        "links": {
+          "self": "https:\/\/api.cloudconvert.com\/v2\/tasks\/6df0920a-7042-4e87-be52-f38a0a29a67e"
+        }
+      }
+    ],
+    "links": {
+      "self": "https:\/\/api.cloudconvert.com\/v2\/tasks\/4c80f1ae-5b3a-43d5-bb58-1a5c4eb4e46b"
+    }
+  }
+}
