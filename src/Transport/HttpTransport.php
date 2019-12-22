@@ -7,6 +7,7 @@ namespace CloudConvert\Transport;
 use CloudConvert\Exceptions\HttpClientException;
 use CloudConvert\Exceptions\HttpServerException;
 use Http\Client\Common\Plugin\HeaderDefaultsPlugin;
+use Http\Client\Common\Plugin\RedirectPlugin;
 use Http\Client\Common\PluginClient;
 use Http\Client\HttpClient;
 use Http\Discovery\HttpClientDiscovery;
@@ -55,6 +56,7 @@ class HttpTransport
             new HeaderDefaultsPlugin([
                 'User-Agent' => 'cloudconvert-php/v3 (https://github.com/cloudconvert/cloudconvert-php)',
             ]),
+            new RedirectPlugin()
         ];
 
         return new PluginClient($httpClient, $httpClientPlugins);
