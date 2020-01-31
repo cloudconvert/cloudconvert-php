@@ -21,19 +21,7 @@ in your project. To install it please see the [docs](https://getcomposer.org/dow
 composer require cloudconvert/cloudconvert-php
 ```
 
-This package (`cloudconvert/cloudconvert-php`) is not tied to any specific library that sends HTTP messages. Instead,
-it uses [Httplug](https://github.com/php-http/httplug) to let users choose whichever
-PSR-7 implementation and HTTP client they want to use.
 
-If you just want to get started quickly you should run the following command:
-
-```bash
-composer require cloudconvert/cloudconvert-php php-http/guzzle6-adapter guzzlehttp/psr7
-```
-
-This will install the library itself along with an HTTP client adapter that uses
-Guzzle as transport method (provided by Httplug) and a PSR-7 implementation
-(provided by Guzzle). 
 
 Creating Jobs
 -------------------
