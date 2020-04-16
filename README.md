@@ -71,15 +71,22 @@ use \CloudConvert\Models\ImportUploadTask;
 
 
 $job = (new Job())
-    ->addTask(new Task('import/upload','upload-my-file'));
-//  ->addTask(...);
+    ->addTask(new Task('import/upload','upload-my-file'))
+    ->addTask(
+        (new Task('convert', 'convert-my-file'))
+            ->set('input', 'import-my-file')
+            ->set('output_format', 'pdf')
+    )
+    ->addTask(
+        (new Task('export/url', 'export-my-file'))
+            ->set('input', 'convert-my-file')
+    );
 
 $cloudconvert->jobs()->create($job);
 
 $uploadTask = $job->getTasks()->name('upload-my-file')[0];
 
 $cloudconvert->tasks()->upload($uploadTask, fopen('./file.pdf', 'r'));
-
 ```
 The `upload()` method accepts a string, PHP resource or PSR-7 `StreamInterface` as second parameter.
 
