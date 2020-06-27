@@ -222,7 +222,7 @@ class HttpTransport
             throw HttpServerException::networkError($exception);
         }
 
-        if (200 !== $response->getStatusCode() && 201 !== $response->getStatusCode()) {
+        if (!in_array($response->getStatusCode(), [200, 201, 204])) {
             $this->handleErrors($response);
         }
 
