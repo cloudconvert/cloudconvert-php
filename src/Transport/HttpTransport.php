@@ -185,7 +185,7 @@ class HttpTransport
     {
         $builder = new MultipartStreamBuilder($this->getStreamFactory());
         foreach ($additionalParameters as $parameter => $value) {
-            $builder->addResource($parameter, $value);
+            $builder->addResource($parameter, strval($value));
         }
         $builder->addResource('file', $file);
 
