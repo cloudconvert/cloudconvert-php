@@ -37,8 +37,8 @@ class JobTest extends TestCase
         $this->assertNotNull($job->getCreatedAt());
         $this->assertCount(2, $job->getTasks());
 
-        $task1 = $job->getTasks()->operation('convert')[0];
-        $task2 = $job->getTasks()->operation('import/url')[0];
+        $task1 = $job->getTasks()->whereOperation('convert')[0];
+        $task2 = $job->getTasks()->whereOperation('import/url')[0];
 
         $this->assertEquals('convert-it', $task1->getName());
 
@@ -62,14 +62,14 @@ class JobTest extends TestCase
 
         $this->cloudConvert->jobs()->create($job);
 
-        $uploadTask = $job->getTasks()->name('import-it')[0];
+        $uploadTask = $job->getTasks()->whereName('import-it')[0];
 
         $this->cloudConvert->tasks()->upload($uploadTask, fopen(__DIR__ . '/files/input.pdf', 'r'));
 
         $this->cloudConvert->jobs()->wait($job);
         $this->assertEquals(Job::STATUS_FINISHED, $job->getStatus());
 
-        $exportTask = $job->getTasks()->status(Task::STATUS_FINISHED)->name('export-it')[0];
+        $exportTask = $job->getTasks()->whereStatus(Task::STATUS_FINISHED)->whereName('export-it')[0];
 
         $this->assertNotNull($exportTask->getResult());
 

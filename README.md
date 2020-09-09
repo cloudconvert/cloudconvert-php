@@ -93,7 +93,7 @@ $job = (new Job())
 
 $cloudconvert->jobs()->create($job);
 
-$uploadTask = $job->getTasks()->name('upload-my-file')[0];
+$uploadTask = $job->getTasks()->whereName('upload-my-file')[0];
 
 $cloudconvert->tasks()->upload($uploadTask, fopen('./file.pdf', 'r'));
 ```
@@ -169,8 +169,8 @@ $job = $webhookEvent->getJob();
 $job->getTag(); // can be used to store an ID
 
 $exportTask = $job->getTasks()
-            ->status(Task::STATUS_FINISHED) // get the task with 'finished' status ...
-            ->name('export-it')[0]);        // ... and with the name 'export-it'
+            ->whereStatus(Task::STATUS_FINISHED) // get the task with 'finished' status ...
+            ->whereName('export-it')[0];        // ... and with the name 'export-it'
 // ...
 
 ```
