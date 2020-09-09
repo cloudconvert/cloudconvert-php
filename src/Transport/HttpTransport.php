@@ -12,6 +12,7 @@ use Http\Client\Common\PluginClient;
 use Http\Client\HttpClient;
 use Http\Discovery\HttpClientDiscovery;
 use Http\Discovery\MessageFactoryDiscovery;
+use Http\Discovery\Psr18ClientDiscovery;
 use Http\Discovery\StreamFactoryDiscovery;
 use Http\Discovery\UriFactoryDiscovery;
 use Http\Message\MessageFactory;
@@ -51,7 +52,7 @@ class HttpTransport
     protected function createHttpClientInstance(): HttpClient
     {
 
-        $httpClient = $this->options['http_client'] ?? HttpClientDiscovery::find();
+        $httpClient = $this->options['http_client'] ?? Psr18ClientDiscovery::find();
         $httpClientPlugins = [
             new HeaderDefaultsPlugin([
                 'User-Agent' => 'cloudconvert-php/v3 (https://github.com/cloudconvert/cloudconvert-php)',

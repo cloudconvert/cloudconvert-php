@@ -37,13 +37,11 @@ class JobTest extends TestCase
         $this->assertNotNull($job->getCreatedAt());
         $this->assertCount(2, $job->getTasks());
 
-        $task1 = $job->getTasks()[0];
-        $task2 = $job->getTasks()[1];
+        $task1 = $job->getTasks()->operation('convert')[0];
+        $task2 = $job->getTasks()->operation('import/url')[0];
 
-        $this->assertEquals('convert', $task1->getOperation());
         $this->assertEquals('convert-it', $task1->getName());
 
-        $this->assertEquals('import/url', $task2->getOperation());
         $this->assertEquals('import-it', $task2->getName());
 
     }
