@@ -19,7 +19,7 @@ in your project.
 Install the SDK alongside Guzzle 7:
 
 ```bash
-composer require cloudconvert/cloudconvert-php "guzzlehttp/guzzle:^7.0"
+composer require cloudconvert/cloudconvert-php guzzlehttp/guzzle:^7.0
 ```
 
 This package is not tied to any specific HTTP client. Instead, it uses [Httplug](https://github.com/php-http/httplug) to let users choose whichever HTTP client they want to use.
