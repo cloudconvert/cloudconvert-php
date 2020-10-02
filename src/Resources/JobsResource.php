@@ -68,7 +68,7 @@ class JobsResource extends AbstractResource
      */
     public function refresh(Job $job, $query = null): Job
     {
-        $response = $this->httpTransport->get($this->httpTransport->getBaseUri() . '/jobs/' . $job->getId(), $query);
+        $response = $this->httpTransport->get($this->httpTransport->getBaseUri() . '/jobs/' . $job->getId(), $query ?? []);
         return $this->hydrator->hydrateObjectByResponse($job, $response);
     }
 
