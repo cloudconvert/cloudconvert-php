@@ -90,8 +90,7 @@ class JsonMapperHydrator implements HydratorInterface
      */
     public function createObjectByResponse(string $class, ResponseInterface $response)
     {
-        $body = json_decode($response->getBody());
-        return $this->hydrateObjectByResponse($this->jsonMapper->createInstance($class, false, $body->data), $response);
+        return $this->hydrateObjectByResponse(new $class, $response);
     }
 
 

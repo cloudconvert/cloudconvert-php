@@ -15,7 +15,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected $cloudConvert;
 
 
-    public function setUp()
+    public function setUp(): void
     {
 
         $this->cloudConvert = new CloudConvert([

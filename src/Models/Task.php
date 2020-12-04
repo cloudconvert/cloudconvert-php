@@ -85,9 +85,10 @@ class Task
     /**
      * Task constructor.
      *
-     * @param string $name
+     * @param string|null $operation
+     * @param string|null $name
      */
-    public function __construct(string $operation, string $name)
+    public function __construct(string $operation = null, string $name = null)
     {
         $this->operation = $operation;
         $this->name = $name;
