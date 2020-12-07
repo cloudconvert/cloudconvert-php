@@ -21,7 +21,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected $mockClient;
 
 
-    public function setUp()
+    public function setUp(): void
     {
 
         $this->cloudConvert = new CloudConvert([
@@ -42,6 +42,22 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
         return $this->mockClient;
 
+    }
+
+    /**
+     * The method is here to provice BC compatibility with PHPUnit >= 9 where this method was removed.
+     *
+     * @param string $regex
+     */
+    public function expectExceptionMessageRegExp(string $regex): void
+    {
+        if (!method_exists($this, 'expectExceptionMessageMatches')) {
+            parent::expectExceptionMessageRegExp($regex);
+
+            return;
+        }
+
+        $this->expectExceptionMessageMatches($regex);
     }
 
 }

@@ -174,8 +174,8 @@ class TaskResourceTest extends TestCase
                 $body = (string)$request->getBody();
 
                 foreach ((array)$task->getResult()->form->parameters as $parameter => $value) {
-                    $this->assertContains('name="' . $parameter . '"', $body);
-                    $this->assertContains((string)$value, $body);
+                    $this->assertStringContainsString('name="' . $parameter . '"', $body);
+                    $this->assertStringContainsString((string)$value, $body);
                 }
 
                 return true;
