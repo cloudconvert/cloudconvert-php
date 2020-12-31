@@ -83,7 +83,7 @@ $job = (new Job())
     ->addTask(new Task('import/upload','upload-my-file'))
     ->addTask(
         (new Task('convert', 'convert-my-file'))
-            ->set('input', 'import-my-file')
+            ->set('input', 'upload-my-file')
             ->set('output_format', 'pdf')
     )
     ->addTask(
