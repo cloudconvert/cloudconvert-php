@@ -95,7 +95,7 @@ $cloudconvert->jobs()->create($job);
 
 $uploadTask = $job->getTasks()->whereName('upload-my-file')[0];
 
-$cloudconvert->tasks()->upload($uploadTask, fopen('./file.pdf', 'r'));
+$cloudconvert->tasks()->upload($uploadTask, fopen('./file.pdf', 'r'), 'file.pdf');
 ```
 The `upload()` method accepts a string, PHP resource or PSR-7 `StreamInterface` as second parameter.
 
