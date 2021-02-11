@@ -191,7 +191,7 @@ class HttpTransport
         }
 
         $resourceOptions = [];
-        if($fileName === null) {
+        if($fileName !== null) {
             $resourceOptions['filename'] = $fileName;
         }
         $builder->addResource('file', $file, $resourceOptions);
