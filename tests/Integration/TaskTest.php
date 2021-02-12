@@ -29,6 +29,8 @@ class TaskTest extends TestCase
         ], (array)$task->getPayload());
         $this->assertEquals(Task::STATUS_WATING, $task->getStatus());
 
+        $this->cloudConvert->tasks()->delete($task);
+
 
     }
 
@@ -48,6 +50,8 @@ class TaskTest extends TestCase
         $this->assertEquals(Task::STATUS_FINISHED, $task->getStatus());
 
         $this->assertEquals('input.pdf', $task->getResult()->files[0]->filename);
+
+        $this->cloudConvert->tasks()->delete($task);
 
 
     }

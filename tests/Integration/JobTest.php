@@ -44,6 +44,8 @@ class JobTest extends TestCase
 
         $this->assertEquals('import-it', $task2->getName());
 
+        $this->cloudConvert->jobs()->delete($job);
+
     }
 
 
@@ -86,6 +88,8 @@ class JobTest extends TestCase
 
 
         $this->assertEquals(filesize($destPath), 172570);
+
+        $this->cloudConvert->jobs()->delete($job);
 
 
     }
