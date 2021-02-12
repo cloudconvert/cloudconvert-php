@@ -4,6 +4,7 @@
 namespace CloudConvert\Transport;
 
 
+use CloudConvert\CloudConvert;
 use CloudConvert\Exceptions\HttpClientException;
 use CloudConvert\Exceptions\HttpServerException;
 use Http\Client\Common\Plugin\HeaderDefaultsPlugin;
@@ -55,7 +56,7 @@ class HttpTransport
         $httpClient = $this->options['http_client'] ?? Psr18ClientDiscovery::find();
         $httpClientPlugins = [
             new HeaderDefaultsPlugin([
-                'User-Agent' => 'cloudconvert-php/v3 (https://github.com/cloudconvert/cloudconvert-php)',
+                'User-Agent' => 'cloudconvert-php/v' . CloudConvert::VERSION . ' (https://github.com/cloudconvert/cloudconvert-php)',
             ]),
             new RedirectPlugin()
         ];
@@ -191,7 +192,7 @@ class HttpTransport
         }
 
         $resourceOptions = [];
-        if($fileName !== null) {
+        if ($fileName !== null) {
             $resourceOptions['filename'] = $fileName;
         }
         $builder->addResource('file', $file, $resourceOptions);
