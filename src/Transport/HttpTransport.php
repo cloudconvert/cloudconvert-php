@@ -178,17 +178,23 @@ class HttpTransport
     /**
      * @param                                 $path
      * @param string|resource|StreamInterface $file
+     * @param string|null                     $fileName
      * @param array                           $additionalParameters
      *
      * @return ResponseInterface
      */
-    public function upload($path, $file, array $additionalParameters = []): ResponseInterface
+    public function upload($path, $file, string $fileName = null, array $additionalParameters = []): ResponseInterface
     {
         $builder = new MultipartStreamBuilder($this->getStreamFactory());
         foreach ($additionalParameters as $parameter => $value) {
             $builder->addResource($parameter, strval($value));
         }
-        $builder->addResource('file', $file);
+
+        $resourceOptions = [];
+        if($fileName !== null) {
+            $resourceOptions['filename'] = $fileName;
+        }
+        $builder->addResource('file', $file, $resourceOptions);
 
         $multipartStream = $builder->build();
         $boundary = $builder->getBoundary();

@@ -94,10 +94,11 @@ class TasksResource extends AbstractResource
     /**
      * @param Task                            $task
      * @param string|resource|StreamInterface $file
+     * @param string|null                     $fileName
      *
      * @return ResponseInterface
      */
-    public function upload(Task $task, $file): ResponseInterface
+    public function upload(Task $task, $file, string $fileName = null): ResponseInterface
     {
         if ($task->getOperation() !== 'import/upload') {
             throw new \BadMethodCallException('The task operation is not import/upload');
@@ -108,7 +109,7 @@ class TasksResource extends AbstractResource
             throw new \BadMethodCallException('The task is not ready for uploading');
         }
         $form = $task->getResult()->form;
-        return $this->httpTransport->upload($form->url, $file, (array)$form->parameters ?? []);
+        return $this->httpTransport->upload($form->url, $file, $fileName, (array)$form->parameters ?? []);
     }
 
 }
