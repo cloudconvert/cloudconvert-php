@@ -10,6 +10,7 @@ use CloudConvert\Resources\TasksResource;
 use CloudConvert\Resources\UsersResource;
 use CloudConvert\Transport\HttpTransport;
 use Http\Client\HttpClient;
+use Psr\Http\Client\ClientInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CloudConvert
@@ -56,7 +57,7 @@ class CloudConvert
         $resolver->setAllowedTypes('sandbox', 'boolean');
 
         $resolver->setDefined('http_client');
-        $resolver->setAllowedTypes('http_client', HttpClient::class);
+        $resolver->setAllowedTypes('http_client', [HttpClient::class, ClientInterface::class]);
 
     }
 
