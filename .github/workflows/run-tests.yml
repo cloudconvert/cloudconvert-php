@@ -36,7 +36,7 @@ jobs:
           coverage: none
 
       - name: Install dependencies
-        run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
+        run: composer install --prefer-dist --no-progress
 
       - name: Execute tests
         run: vendor/bin/phpunit
