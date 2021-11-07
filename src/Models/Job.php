@@ -11,6 +11,7 @@ class Job
     public const STATUS_PROCESSING = 'processing';
     public const STATUS_ERROR = 'error';
     public const STATUS_FINISHED = 'finished';
+    public const ATTR_TAG_KEY = 'tag';
 
     /**
      * @var string
@@ -18,9 +19,9 @@ class Job
     protected $id;
 
     /**
-     * @var string|null
+     * @var array
      */
-    protected $tag;
+    protected $attributes = array();
 
     /**
      * @var \DateTimeImmutable
@@ -65,7 +66,27 @@ class Job
      */
     public function getTag(): ?string
     {
-        return $this->tag;
+        return null !== ($tag = $this->attributes[self::ATTR_TAG_KEY]) ? $tag : null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttributes(): ?array
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * @param string $key
+     * @param string|null $value
+     *
+     * @return Job
+     */
+    public function setAttribute(string $key, ?string $value): Job
+    {
+        $this->attributes[$key] = $value;
+        return $this;
     }
 
     /**
@@ -75,7 +96,7 @@ class Job
      */
     public function setTag(?string $tag): Job
     {
-        $this->tag = $tag;
+        $this->attributes[self::ATTR_TAG_KEY] = $tag;
         return $this;
     }
 

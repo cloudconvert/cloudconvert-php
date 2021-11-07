@@ -51,10 +51,11 @@ class JobsResource extends AbstractResource
                 $task->getPayload() ?? []
             );
         }
-        $response = $this->httpTransport->post($this->httpTransport->getBaseUri() . '/jobs', [
-            'tasks' => $tasks,
-            'tag'   => $job->getTag()
-        ]);
+        $response = $this->httpTransport->post($this->httpTransport->getBaseUri() . '/jobs', array_merge(
+            ['tasks' => $tasks],
+            $job->getAttributes()
+            )
+        );
         return $this->hydrator->hydrateObjectByResponse($job, $response);
     }
 
