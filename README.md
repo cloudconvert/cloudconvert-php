@@ -1,8 +1,7 @@
 cloudconvert-php
 =======================
 
-> This is the official PHP SDK v3 for the [CloudConvert](https://cloudconvert.com/api/v2) _API v2_. 
-> For API v1, please use [v2 branch](https://github.com/cloudconvert/cloudconvert-php/tree/v2) of this repository.
+This is the official PHP SDK for the [CloudConvert](https://cloudconvert.com/api/v2) **API v2**.
 
 [![Tests](https://github.com/cloudconvert/cloudconvert-php/actions/workflows/run-tests.yml/badge.svg)](https://github.com/cloudconvert/cloudconvert-php/actions/workflows/run-tests.yml)
 [![Latest Stable Version](https://poser.pugx.org/cloudconvert/cloudconvert-php/v/stable)](https://packagist.org/packages/cloudconvert/cloudconvert-php)
