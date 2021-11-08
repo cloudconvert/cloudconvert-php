@@ -23,6 +23,11 @@ class Job
     protected $tag;
 
     /**
+     * @var string|null
+     */
+    protected $webhook_url;
+
+    /**
      * @var \DateTimeImmutable
      */
     protected $created_at;
@@ -77,6 +82,22 @@ class Job
     {
         $this->tag = $tag;
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getWebhookUrl(): ?string
+    {
+        return $this->webhook_url;
+    }
+
+    /**
+     * @param string|null $webhook_url
+     */
+    public function setWebhookUrl(?string $webhook_url): void
+    {
+        $this->webhook_url = $webhook_url;
     }
 
     /**
