@@ -95,9 +95,10 @@ class Job
     /**
      * @param string|null $webhook_url
      */
-    public function setWebhookUrl(?string $webhook_url): void
+    public function setWebhookUrl(?string $webhook_url): Job
     {
         $this->webhook_url = $webhook_url;
+        return $this;
     }
 
     /**
