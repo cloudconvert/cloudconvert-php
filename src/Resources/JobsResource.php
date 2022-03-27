@@ -81,7 +81,7 @@ class JobsResource extends AbstractResource
      */
     public function wait(Job $job): Job
     {
-        $response = $this->httpTransport->get($this->httpTransport->getBaseUri() . '/jobs/' . $job->getId() . '/wait');
+        $response = $this->httpTransport->get($this->httpTransport->getSyncBaseUri() . '/jobs/' . $job->getId());
         return $this->hydrator->hydrateObjectByResponse($job, $response);
     }
 
