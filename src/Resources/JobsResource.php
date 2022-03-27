@@ -44,18 +44,7 @@ class JobsResource extends AbstractResource
      */
     public function create(Job $job): Job
     {
-        $tasks = [];
-        foreach ($job->getTasks() ?? [] as $task) {
-            $tasks[$task->getName()] = array_merge(
-                ['operation' => $task->getOperation()],
-                $task->getPayload() ?? []
-            );
-        }
-        $response = $this->httpTransport->post($this->httpTransport->getBaseUri() . '/jobs', [
-            'tasks'       => $tasks,
-            'tag'         => $job->getTag(),
-            'webhook_url' => $job->getWebhookUrl()
-        ]);
+        $response = $this->httpTransport->post($this->httpTransport->getBaseUri() . '/jobs', $job->getPayload());
         return $this->hydrator->hydrateObjectByResponse($job, $response);
     }
 

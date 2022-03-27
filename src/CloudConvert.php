@@ -2,6 +2,7 @@
 
 namespace CloudConvert;
 
+use CloudConvert\Handler\SignedUrlBuilder;
 use CloudConvert\Handler\WebhookHandler;
 use CloudConvert\Hydrator\HydratorInterface;
 use CloudConvert\Hydrator\JsonMapperHydrator;
@@ -116,6 +117,15 @@ class CloudConvert
     public function webhookHandler(): WebhookHandler
     {
         return new WebhookHandler($this->getHydrator());
+    }
+
+
+    /**
+     * @return SignedUrlBuilder
+     */
+    public function signedUrlBuilder(): SignedUrlBuilder
+    {
+        return new SignedUrlBuilder();
     }
 
 }

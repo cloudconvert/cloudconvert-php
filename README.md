@@ -178,6 +178,37 @@ Alternatively, you can construct a `WebhookEvent` using a PSR-7 `RequestInterfac
 $webhookEvent = $cloudconvert->webhookHandler()->constructEventFromRequest($request, $signingSecret);
 ```
 
+Signed URLs
+-------------------
+
+Signed URLs allow converting files on demand only using URL query parameters. The PHP SDK allows to generate such URLs. Therefore, you need to obtain a signed URL base and a signing secret on the [CloudConvert Dashboard](https://cloudconvert.com/dashboard/api/v2/signed-urls).
+
+```php
+$cloudconvert = new CloudConvert([
+    'api_key' => 'API_KEY',
+    'sandbox' => false
+]);
+
+$job = (new Job())
+    ->addTask(
+        (new Task('import/url', 'import-my-file'))
+            ->set('url', 'https://my.url/file.docx')
+    )
+    ->addTask(
+        (new Task('convert', 'convert-my-file'))
+            ->set('input', 'import-my-file')
+            ->set('output_format', 'pdf')
+    )
+    ->addTask(
+        (new Task('export/url', 'export-my-file'))
+            ->set('input', 'convert-my-file')
+    );
+
+$signedUrlBase = 'SIGNED_URL_BASE';
+$signingSecret = 'SIGNED_URL_SIGNING_SECRET';
+$url = $cloudConvert->signedUrlBuilder()->createFromJob($signedUrlBase, $signingSecret, $job, 'CACHE_KEY');
+```
+
 
 Unit Tests
 -----------------
