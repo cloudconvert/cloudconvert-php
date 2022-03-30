@@ -184,4 +184,21 @@ class Job
     }
 
 
+    public function getPayload(): array
+    {
+        $tasks = [];
+        foreach ($this->getTasks() ?? [] as $task) {
+            $tasks[$task->getName()] = array_merge(
+                ['operation' => $task->getOperation()],
+                $task->getPayload() ?? []
+            );
+        }
+        return [
+            'tasks'       => $tasks,
+            'tag'         => $this->getTag(),
+            'webhook_url' => $this->getWebhookUrl()
+        ];
+    }
+
+
 }
