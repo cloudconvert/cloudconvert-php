@@ -74,7 +74,7 @@ Uploads to CloudConvert are done via `import/upload` tasks (see the [docs](https
 
 ```php
 use \CloudConvert\Models\Job;
-use \CloudConvert\Models\ImportUploadTask;
+use \CloudConvert\Models\Task;
 
 
 $job = (new Job())
