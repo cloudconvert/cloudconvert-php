@@ -10,19 +10,15 @@ use CloudConvert\Exceptions\HttpServerException;
 use Http\Client\Common\Plugin\HeaderDefaultsPlugin;
 use Http\Client\Common\Plugin\RedirectPlugin;
 use Http\Client\Common\PluginClient;
-use Http\Client\HttpClient;
-use Http\Discovery\HttpClientDiscovery;
-use Http\Discovery\MessageFactoryDiscovery;
+use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Discovery\Psr18ClientDiscovery;
-use Http\Discovery\StreamFactoryDiscovery;
-use Http\Discovery\UriFactoryDiscovery;
-use Http\Message\MessageFactory;
 use Http\Message\MultipartStream\MultipartStreamBuilder;
-use Http\Message\StreamFactory;
-use Http\Message\UriFactory;
+use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriFactoryInterface;
 
 
 class HttpTransport
@@ -30,7 +26,6 @@ class HttpTransport
 
     protected $options;
     protected $httpClient;
-    protected $messageFactory;
 
 
     /**
@@ -48,9 +43,9 @@ class HttpTransport
     /**
      * Creates a new instance of the HTTP client.
      *
-     * @return HttpClient
+     * @return PluginClient
      */
-    protected function createHttpClientInstance(): HttpClient
+    protected function createHttpClientInstance(): PluginClient
     {
 
         $httpClient = $this->options['http_client'] ?? Psr18ClientDiscovery::find();
@@ -82,35 +77,35 @@ class HttpTransport
     }
 
     /**
-     * @return HttpClient
+     * @return PluginClient
      */
-    public function getHttpClient(): HttpClient
+    public function getHttpClient(): PluginClient
     {
         return $this->httpClient;
     }
 
     /**
-     * @return MessageFactory
+     * @return RequestFactoryInterface
      */
-    public function getMessageFactory(): MessageFactory
+    public function getRequestFactory(): RequestFactoryInterface
     {
-        return $this->options['message_factory'] ?? MessageFactoryDiscovery::find();
+        return $this->options['request_factory'] ?? Psr17FactoryDiscovery::findRequestFactory();
     }
 
     /**
-     * @return UriFactory
+     * @return UriFactoryInterface
      */
-    public function getUriFactory(): UriFactory
+    public function getUriFactory(): UriFactoryInterface
     {
-        return $this->options['uri_factory'] ?? UriFactoryDiscovery::find();
+        return $this->options['uri_factory'] ?? Psr17FactoryDiscovery::findUriFactory();
     }
 
     /**
-     * @return StreamFactory
+     * @return StreamFactoryInterface
      */
-    public function getStreamFactory(): StreamFactory
+    public function getStreamFactory(): StreamFactoryInterface
     {
-        return $this->options['stream_factory'] ?? StreamFactoryDiscovery::find();
+        return $this->options['stream_factory'] ?? Psr17FactoryDiscovery::findStreamFactory();
     }
 
     /**
@@ -127,7 +122,7 @@ class HttpTransport
         }
 
 
-        return $this->sendRequest($this->getMessageFactory()->createRequest('GET', $path, [
+        return $this->sendRequest($this->getRequestFactory()->createRequest('GET', $path, [
             'accept-encoding' => 'application/json'
         ]));
     }
@@ -140,9 +135,19 @@ class HttpTransport
      */
     public function download(string $url)
     {
-        return $this->sendRequest($this->getMessageFactory()->createRequest('GET', $url), false)->getBody();
+        return $this->sendRequest($this->getRequestFactory()->createRequest('GET', $url), false)->getBody();
     }
 
+
+    /**
+     * @param array<string, mixed>|string $body
+     */
+    protected function buildBody($body): StreamInterface
+    {
+        $stringBody = is_array($body) ? json_encode($body, JSON_THROW_ON_ERROR) : $body;
+
+        return $this->getStreamFactory()->createStream($stringBody);
+    }
 
     /**
      * @param $path
@@ -152,10 +157,12 @@ class HttpTransport
      */
     public function post(string $path, array $body): ResponseInterface
     {
-        return $this->sendRequest($this->getMessageFactory()->createRequest('POST', $path, [
-            'content-type'    => 'application/json',
-            'accept-encoding' => 'application/json'
-        ], json_encode($body)));
+        return $this->sendRequest(
+            $this->getRequestFactory()->createRequest('POST', $path)
+                ->withHeader('content-type', 'application/json')
+                ->withHeader('accept-encoding', 'application/json')
+                ->withBody($this->buildBody($body))
+        );
     }
 
     /**
@@ -166,10 +173,12 @@ class HttpTransport
      */
     public function put(string $path, array $body): ResponseInterface
     {
-        return $this->sendRequest($this->getMessageFactory()->createRequest('PUT', $path, [
-            'content-type'    => 'application/json',
-            'accept-encoding' => 'application/json'
-        ], json_encode($body)));
+        return $this->sendRequest(
+            $this->getRequestFactory()->createRequest('POST', $path)
+                ->withHeader('content-type', 'application/json')
+                ->withHeader('accept-encoding', 'application/json')
+                ->withBody($this->buildBody($body))
+        );
     }
 
     /**
@@ -179,7 +188,7 @@ class HttpTransport
      */
     public function delete(string $path): ResponseInterface
     {
-        return $this->sendRequest($this->getMessageFactory()->createRequest('DELETE', $path, [
+        return $this->sendRequest($this->getRequestFactory()->createRequest('DELETE', $path, [
             'accept-encoding' => 'application/json'
         ]));
     }
@@ -208,12 +217,12 @@ class HttpTransport
         $multipartStream = $builder->build();
         $boundary = $builder->getBoundary();
 
-        $request = $this->getMessageFactory()->createRequest(
+        $request = $this->getRequestFactory()->createRequest(
             'POST',
-            $path,
-            ['Content-Type' => 'multipart/form-data; boundary="' . $boundary . '"'],
-            $multipartStream
-        );
+            $path
+        )
+            ->withHeader('Content-Type', 'multipart/form-data; boundary="' . $boundary . '"')
+            ->withBody($multipartStream);
 
         return $this->sendRequest($request, false);
     }

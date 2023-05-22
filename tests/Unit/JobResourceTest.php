@@ -4,9 +4,7 @@
 namespace CloudConvert\Tests\Unit;
 
 
-use CloudConvert\Models\ConvertTask;
-use CloudConvert\Models\ExportUrlTask;
-use CloudConvert\Models\ImportUrlTask;
+
 use CloudConvert\Models\Job;
 use CloudConvert\Models\Task;
 

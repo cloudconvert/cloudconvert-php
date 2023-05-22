@@ -14,19 +14,13 @@ Install
 To install the PHP SDK you will need to be using [Composer]([https://getcomposer.org/)
 in your project. 
  
-Install the SDK alongside Guzzle 7:
+Install the SDK alongside Guzzle:
 
 ```bash
-composer require cloudconvert/cloudconvert-php php-http/guzzle7-adapter
+composer require cloudconvert/cloudconvert-php guzzlehttp/guzzle
 ```
 
-This package is not tied to any specific HTTP client. Instead, it uses [Httplug](https://github.com/php-http/httplug) to let users choose whichever HTTP client they want to use.
-
-If you want to use Guzzle 6 instead, use:
-
-```bash
-composer require cloudconvert/cloudconvert-php php-http/guzzle6-adapter
-```
+This package is not tied to any specific HTTP client by using [PSR-7](https://www.php-fig.org/psr/psr-7/), [PSR-17](https://www.php-fig.org/psr/psr-17/), [PSR-18](https://www.php-fig.org/psr/psr-18/), and [HTTPlug](https://httplug.io/). Therefore, you will also need to install packages that provide [`psr/http-client-implementation`](https://packagist.org/providers/psr/http-client-implementation) and [`psr/http-factory-implementation`](https://packagist.org/providers/psr/http-factory-implementation) (for example Guzzle).
 
 
 
