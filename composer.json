@@ -18,7 +18,7 @@
     "psr/http-message": "^1.1 || ^2.0",
     "psr/http-factory-implementation": "^1.0",
     "psr/http-client-implementation": "^1.0",
-    "symfony/options-resolver": "^4.2 || ^5.0 || ^6.0",
+    "symfony/options-resolver": "^4.2 || ^5.0 || ^6.0 || ^7.0",
     "netresearch/jsonmapper": "^4.0"
   },
   "require-dev": {
