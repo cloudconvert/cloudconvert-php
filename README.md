@@ -83,7 +83,7 @@ $job = (new Job())
             ->set('input', 'convert-my-file')
     );
 
-$cloudconvert->jobs()->create($job);
+$job = $cloudconvert->jobs()->create($job);
 
 $uploadTask = $job->getTasks()->whereName('upload-my-file')[0];
 
