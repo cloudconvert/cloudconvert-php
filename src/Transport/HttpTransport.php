@@ -65,7 +65,10 @@ class HttpTransport
      */
     public function getBaseUri(): string
     {
-        return $this->options['sandbox'] ? 'https://api.sandbox.cloudconvert.com/v2' : 'https://api.cloudconvert.com/v2';
+        if ($this->options['sandbox']) {
+            return 'https://api.sandbox.cloudconvert.com/v2';
+        }
+        return isset($this->options['region']) ? 'https://' . $this->options['region'] . '.api.cloudconvert.com/v2' : 'https://api.cloudconvert.com/v2';
     }
 
     /**
@@ -73,7 +76,10 @@ class HttpTransport
      */
     public function getSyncBaseUri(): string
     {
-        return $this->options['sandbox'] ? 'https://sync.api.sandbox.cloudconvert.com/v2' : 'https://sync.api.cloudconvert.com/v2';
+        if ($this->options['sandbox']) {
+            return 'https://sync.api.sandbox.cloudconvert.com/v2';
+        }
+        return isset($this->options['region']) ? 'https://' . $this->options['region'] . '.sync.api.cloudconvert.com/v2' : 'https://sync.api.cloudconvert.com/v2';
     }
 
     /**

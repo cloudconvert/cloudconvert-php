@@ -204,6 +204,22 @@ $url = $cloudConvert->signedUrlBuilder()->createFromJob($signedUrlBase, $signing
 ```
 
 
+
+Setting a Region
+-----------------
+
+By default, the region in your [account settings](https://cloudconvert.com/dashboard/region) is used. Alternatively, you can set a fixed region:
+
+```php
+// Pass the region to the constructor
+$cloudconvert = new CloudConvert([
+    'api_key' => 'API_KEY',
+    'sandbox' => false,
+    'region'  => 'us-east'
+]);
+```
+
+
 Unit Tests
 -----------------
 

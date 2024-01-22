@@ -59,6 +59,9 @@ class CloudConvert
         $resolver->setDefined('http_client');
         $resolver->setAllowedTypes('http_client', [ClientInterface::class]);
 
+        $resolver->setDefined('region');
+        $resolver->setAllowedTypes('region', 'string');
+
     }
 
 
