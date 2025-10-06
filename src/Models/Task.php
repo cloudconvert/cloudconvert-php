@@ -88,7 +88,7 @@ class Task
      * @param string|null $operation
      * @param string|null $name
      */
-    public function __construct(string $operation = null, string $name = null)
+    public function __construct(?string $operation = null, ?string $name = null)
     {
         $this->operation = $operation;
         $this->name = $name;

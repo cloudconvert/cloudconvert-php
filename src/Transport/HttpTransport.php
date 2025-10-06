@@ -207,7 +207,7 @@ class HttpTransport
      *
      * @return ResponseInterface
      */
-    public function upload($path, $file, string $fileName = null, array $additionalParameters = []): ResponseInterface
+    public function upload($path, $file, ?string $fileName = null, array $additionalParameters = []): ResponseInterface
     {
         $builder = new MultipartStreamBuilder($this->getStreamFactory());
         foreach ($additionalParameters as $parameter => $value) {
