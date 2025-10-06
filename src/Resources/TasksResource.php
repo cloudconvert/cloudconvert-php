@@ -98,7 +98,7 @@ class TasksResource extends AbstractResource
      *
      * @return ResponseInterface
      */
-    public function upload(Task $task, $file, string $fileName = null): ResponseInterface
+    public function upload(Task $task, $file, ?string $fileName = null): ResponseInterface
     {
         if ($task->getOperation() !== 'import/upload') {
             throw new \BadMethodCallException('The task operation is not import/upload');

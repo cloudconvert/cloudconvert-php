@@ -8,7 +8,7 @@ class SignedUrlBuilder
 {
 
 
-    public function createFromJob(string $base, string $signingSecret, Job $job, string $cacheKey = null): string
+    public function createFromJob(string $base, string $signingSecret, Job $job, ?string $cacheKey = null): string
     {
 
         $json = json_encode($job->getPayload());
