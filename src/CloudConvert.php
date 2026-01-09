@@ -16,7 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class CloudConvert
 {
 
-    const VERSION = '3.4.2';
+    const VERSION = '3.4.3';
 
     /**
      * @var array
